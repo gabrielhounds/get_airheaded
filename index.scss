@@ -1,0 +1,84 @@
+@font-face {
+    font-family: 'uniform_roundedultra';
+    src: url('fonts/miller_type_foundry_-_uniform_rounded_ultra-webfont.woff2') format('woff2'),
+         url('fonts/miller_type_foundry_-_uniform_rounded_ultra-webfont.woff') format('woff'),
+         url('fonts/miller_type_foundry_-_uniform_rounded_ultra-webfont.svg#uniform_roundedultra') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+@font-face {
+    font-family: 'uniform_roundedblack';
+    src: url('fonts/miller_type_foundry_-_uniform_rounded_black-webfont.woff2') format('woff2'),
+         url('fonts/miller_type_foundry_-_uniform_rounded_black-webfont.woff') format('woff'),
+         url('fonts/miller_type_foundry_-_uniform_rounded_black-webfont.svg#uniform_roundedblack') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+@font-face {
+    font-family: 'uniform_roundedbold';
+    src: url('fonts/miller_type_foundry_-_uniform_rounded_bold-webfont.woff2') format('woff2'),
+         url('fonts/miller_type_foundry_-_uniform_rounded_bold-webfont.woff') format('woff'),
+         url('fonts/miller_type_foundry_-_uniform_rounded_bold-webfont.svg#uniform_roundedbold') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+body, * {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+body {
+
+}
+
+.testText1 {
+	position: absolute;
+	left: -1000px;
+	font-family: 'uniform_roundedbold';
+}
+.testText2 {
+	position: absolute;
+	left: -1000px;
+	font-family: 'uniform_roundedblack';
+}
+.testText3 {
+	position: absolute;
+	left: -1000px;
+	font-family: 'uniform_roundedultra';
+}
+
+div {
+	position: absolute;
+}
+
+#game {
+	position: absolute;
+	overflow: hidden;
+	top: 0;
+	left: 50%;
+	//width: 1280px;
+	//height: 500px;
+	transform: translate(-50%);
+	background-color: #000000;
+}
+
+#closeBtn {
+	top: 0;
+	right: 0;
+	width: 50px;
+	height: 50px;
+	z-index: 999;
+	background-image: url(closeBtn.png);
+	cursor: pointer;
+}
+
+
+
+
