@@ -144,21 +144,38 @@ function init() {
 			if (max == null) { max = min; min = 0; }
 			return Math.round(Math.random() * (max - min) + min);
 		}
+
+		// hitRect.toGlobal(app.stage.position).x
+		// hitRect.toGlobal(app.stage.position).y
+
 		var hitTest = function(r1, r2) {
 			var hit, combinedHalfWidths ,combinedHalfHeights, vx, vy;
 			hit = false;
-			r1.centerX = r1.x;
-			r1.centerY = r1.y;
-			r2.centerX = (r2.x + 40);
-			r2.centerY = (r2.y - 10);
+
+			//r1.centerX = r1.x;
+			//r1.centerY = r1.y;
+
+			//r2.centerX = r2.x;
+			//r2.centerY = r2.y;
+
+			r1.centerX = r1.x + r1.width / 2;
+			r1.centerY = r1.y + r1.height / 2;
+
+			r2.centerX = r2.toGlobal(app.stage.position).x + r2.width / 2;
+			r2.centerY = r2.toGlobal(app.stage.position).y + r2.height / 2;
+
 			r1.halfWidth = r1.width / 2;
 			r1.halfHeight = r1.height / 2;
-			r2.halfWidth = 20;
-			r2.halfHeight = 60;
+
+			r2.halfWidth = r2.width / 2;
+			r2.halfHeight = r2.width / 2;
+
 			vx = r1.centerX - r2.centerX;
 			vy = r1.centerY - r2.centerY;
+
 			combinedHalfWidths = r1.halfWidth + r2.halfWidth;
 			combinedHalfHeights = r1.halfHeight + r2.halfHeight;
+
 			if (Math.abs(vx) < combinedHalfWidths) {
 				//Collision X
 				if (Math.abs(vy) < combinedHalfHeights) {
@@ -284,37 +301,24 @@ function init() {
 	var cx, cy;
 
 	function handleCandy() {
+
 		for ( var i = 0; i < candies.length; i++ ) {
-
 			cy = stageH / 2 - candies[i].y;
-
 			cx = stageW / 2 - candies[i].x;
 
 			if (candies[i].scale.x > 0) {
-
 				candies[i].y += cy * 0.03;
 				//candies[i].x += cx * 0.03;
-
 				if (candies[i].scale.x > 0.5 ) {
-
 					candies[i].scale.x = candies[i].scale.y -= 0.03;
-
 				} else {
 					candies[i].scale.x = candies[i].scale.y -= 0.01;
 				}
-
-
-
-
 			} else {
 				candies[i].scale.x = candies[i].scale.y = 0;
 			}
 
 			if (candies[i].scale.x > 0.02) {
-
-				log(candyBlur.blur);
-
-				//candyBlur.blur -= 0.035;
 
 				if (candyBlur.blur > 0) {
 					candyBlur.blur -= 0.035;
@@ -322,8 +326,6 @@ function init() {
 					candies[i].filters = [];
 					candyBlur.blur = 0;
 				}
-
-
 			}
 
 			if (candies[i].scale.x < 0.5 ) {
@@ -331,13 +333,15 @@ function init() {
 			}
 
 
-
+			if (candies[i].scale.x > 0.5  && candies[i].scale.x < 1.0 ) {
+				if (Utils.hitTest(candies[i], hitRect)) {
+					log('CANDY COLLISION');
+				}
+			}
 
 
 
 			//candies[i].y += 0.0001;
-
-
 			//t.set(candies[i], {pixi:{x:Utils.random(200, 400), y:Utils.random(stageH / 2 - 100, stageH / 2 + 100) }} );
 
 		}
@@ -427,6 +431,8 @@ function init() {
 		lowerRightArm.rotation = (dx / 2.5 * (Math.PI / 180));
 
 
+		//log('HIT RECT X: ' + hitRect.toGlobal(app.stage.position).x );
+		//log('HIT RECT Y: ' + hitRect.toGlobal(app.stage.position).y );
 
 	}
 
@@ -550,7 +556,7 @@ function init() {
 			airHead.addChild(head);
 			airHead.addChild(hitRect);
 
-			hitRect.position.set(-100, -250);
+			hitRect.position.set(-100, -150);
 
 
 			airHead.scale.set(0.75);
@@ -576,6 +582,8 @@ function init() {
 			candyHolder.addChild(candy6);
 
 			candies = [candy0, candy1, candy2, candy3, candy4, candy5, candy6];
+
+			//candies = [candy0, candy1];
 
 			for ( var i = 0; i < candies.length; i++ ) {
 
@@ -687,12 +695,12 @@ function init() {
 
 			hitRect = new PIXI.Graphics();
 			hitRect.beginFill(0xFF3300);
-			hitRect.drawRect(0, 0, 200, 250);
+			hitRect.drawRect(0, 0, 200, 100);
 			hitRect.endFill();
-			hitRect.alpha = 0.1;
+			hitRect.alpha = 0.5;
 			hitRect.interactive = true;
 			hitRect.buttonMode = true;
-			hitRect.hitArea = new PIXI.Rectangle(0, 0, 200, 250);
+			hitRect.hitArea = new PIXI.Rectangle(0, 0, 200, 100);
 
 			// -- Body
 			airBody = new PIXI.Container();
