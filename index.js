@@ -298,9 +298,25 @@ function init() {
 
 	}
 
+
+
+	function handleScore() {
+
+		head.play();
+
+		head.onComplete = function() {
+			head.gotoAndStop(0);
+		}
+
+
+	}
+
+
 	var cx, cy;
 
 	function handleCandy() {
+
+		//log('CHILDREN = ' + candyHolder.children.length)
 
 		for ( var i = 0; i < candies.length; i++ ) {
 			cy = stageH / 2 - candies[i].y;
@@ -315,7 +331,13 @@ function init() {
 					candies[i].scale.x = candies[i].scale.y -= 0.01;
 				}
 			} else {
-				candies[i].scale.x = candies[i].scale.y = 0;
+				//candies[i].scale.x = candies[i].scale.y = 0;
+				candies[i].scale.x = candies[i].scale.y = 2;
+				t.set(candies[i], {pixi:{x:Utils.random(0, stageW), y:Utils.random(0, -200)}} );
+
+				candyHolder.swapChildren(candies[i], airHead);
+
+				//candyHolder.getChildAt(8)
 			}
 
 			if (candies[i].scale.x > 0.02) {
@@ -329,13 +351,19 @@ function init() {
 			}
 
 			if (candies[i].scale.x < 0.5 ) {
-				main.setChildIndex(candyHolder, 1);
+				candyHolder.setChildIndex(candies[i], 0);
+				//candyHolder.swapChildren(candies[i], airHead);
 			}
 
 
-			if (candies[i].scale.x > 0.5  && candies[i].scale.x < 1.0 ) {
+			if (candies[i].scale.x > 0.5  && candies[i].scale.x < 0.65 ) {
 				if (Utils.hitTest(candies[i], hitRect)) {
 					log('CANDY COLLISION');
+					candies[i].scale.x = candies[i].scale.y = 2;
+					t.set(candies[i], {pixi:{x:Utils.random(0, stageW), y:Utils.random(0, -200)}} );
+
+					handleScore();
+
 				}
 			}
 
@@ -566,6 +594,8 @@ function init() {
 			airHead.interactive = true;
 			airHead.buttonMode = true;
 
+			candyHolder.addChild(airHead);
+
 			candy0.anchor.set(0.5);
 			candy1.anchor.set(0.5);
 			candy2.anchor.set(0.5);
@@ -588,9 +618,7 @@ function init() {
 			for ( var i = 0; i < candies.length; i++ ) {
 
 				candies[i].filters = [candyBlur];
-
 				candies[i].scale.x = candies[i].scale.y = 2;
-
 				t.set(candies[i], {pixi:{x:Utils.random(0, stageW), y:Utils.random(0, -200)}} );
 
 			}
@@ -620,8 +648,12 @@ function init() {
 			interfaceHolder.addChild(scoreText);
 
 
+
+
+
 			main.addChild(bgHolder);
-			main.addChild(airHead);
+			//main.addChild(airHead);
+
 			main.addChild(candyHolder);
 			main.addChild(interfaceHolder);
 
