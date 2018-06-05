@@ -74,9 +74,11 @@ function init() {
 	var main, bgHolder, candyHolder, fgHolder, airheadHolder, hitRect;
 	var sky_bg;
 	var candy0, candy1, candy2, candy3, candy4, candy5, candy6;
+	var candyBlur0, candyBlur1, candyBlur2, candyBlur3, candyBlur4, candyBlur5, candyBlur6;
 	var airHead, airBody, lowerLeftArm, lowerRightArm, upperLeftArm, upperRightArm, lowerLeftLeg, lowerRightLeg, upperLeftLeg, upperRightLeg, torso, head, pelvis, headTextures;
 	var candies = [];
 	var candyBlur;
+	var candyFilters = [];
 
 	//ENDFRAME
 	var endFrame, overlayEnd, endCtaBg1, endCtaBg2, endCtaHolder1, endCtaHolder2, endCtaText1, endCtaText2, ahLogoEnd, yourScoreText, endSubhead;
@@ -158,17 +160,17 @@ function init() {
 			//r2.centerX = r2.x;
 			//r2.centerY = r2.y;
 
-			r1.centerX = r1.x + r1.width / 2;
-			r1.centerY = r1.y + r1.height / 2;
+			r1.centerX = r1.toGlobal(app.stage.position).x + r1.width / 2;
+			r1.centerY = r1.toGlobal(app.stage.position).y + r1.height / 2;
 
-			r2.centerX = r2.toGlobal(app.stage.position).x + r2.width / 2;
-			r2.centerY = r2.toGlobal(app.stage.position).y + r2.height / 2;
+			r2.centerX = r2.toGlobal(app.stage.position).x + r2.width / 4 + 100;
+			r2.centerY = r2.toGlobal(app.stage.position).y + r2.height / 4 + 100;
 
 			r1.halfWidth = r1.width / 2;
 			r1.halfHeight = r1.height / 2;
 
-			r2.halfWidth = r2.width / 2;
-			r2.halfHeight = r2.width / 2;
+			r2.halfWidth = r2.width / 4;
+			r2.halfHeight = r2.width / 4;
 
 			vx = r1.centerX - r2.centerX;
 			vy = r1.centerY - r2.centerY;
@@ -301,95 +303,116 @@ function init() {
 
 
 	function handleScore() {
-
 		head.play();
-
 		head.onComplete = function() {
+			head.gotoAndStop(1);
+		}
+	}
+
+
+	var cx, cy, blurAmount, cnt = 0;
+	var vpX, vpY, fl = 250, xPos, yPos, zPos, scale;
+
+	function handleCandy(delta) {
+
+		zPos += 5;
+		vpX = stageW / 2;
+		vpY = stageH / 2;
+
+		xPos = candy0.x;
+		yPos = candy0.y;
+
+		cy = stageH / 2 - candy0.y;
+		cx = stageW / 2 - candy0.x;
+
+		scale = fl / (fl + zPos);
+
+		//candy0.y = vpY + yPos * scale;
+		//candy0.x = vpX + xPos * scale;
+
+		//candy0.scale.x = candy0.scale.y = scale;
+
+		//log('WIDTH = ' + candy0.width + ' HEIGHT = ' + candy0.height)
+
+		candyBlur0.blur = candy0.scale.x * 4;
+
+		//log(candy0.scale.x * 3);
+
+
+		if (candy0.scale.x < 0.6 && candy0.scale.x > 0.55 ) {
+			if (Utils.hitTest(candy0, hitRect)) {
+				log('CANDY COLLISION');
+				t.set(candy0, {pixi:{x:Utils.random(-400, stageW + 400), y:Utils.random(-4000, -200)}} );
+				candy0.scale.x = candy0.scale.y = Utils.random(2, 4);
+				candyBlur0.blur = 10;
+				//candyHolder.swapChildren(candy0, airHead);
+
+				handleScore();
+			}
+		}
+
+		if (candy0.scale.x > 0) {
+			candy0.y += cy * 0.04;
+			candy0.x += cx * 0.005;
+			candy0.scale.x = candy0.scale.y -= 0.025;
+		} else {
+			t.set(candy0, {pixi:{x:Utils.random(-400, stageW + 400), y:Utils.random(-4000, -200)}} );
+			candy0.scale.x = candy0.scale.y = Utils.random(2, 4);
+			candyBlur0.blur = 10;
+			candyHolder.swapChildren(candy0, airHead);
 			head.gotoAndStop(0);
+
+
+
+			//candy0.scale.y = Utils.random(-4000, -200);
 		}
 
-
-	}
-
-
-	var cx, cy;
-
-	function handleCandy() {
-
-		//log('CHILDREN = ' + candyHolder.children.length)
-
-		for ( var i = 0; i < candies.length; i++ ) {
-			cy = stageH / 2 - candies[i].y;
-			cx = stageW / 2 - candies[i].x;
-
-			if (candies[i].scale.x > 0) {
-				candies[i].y += cy * 0.03;
-				//candies[i].x += cx * 0.03;
-				if (candies[i].scale.x > 0.5 ) {
-					candies[i].scale.x = candies[i].scale.y -= 0.03;
-				} else {
-					candies[i].scale.x = candies[i].scale.y -= 0.01;
-				}
-			} else {
-				//candies[i].scale.x = candies[i].scale.y = 0;
-				candies[i].scale.x = candies[i].scale.y = 2;
-				t.set(candies[i], {pixi:{x:Utils.random(0, stageW), y:Utils.random(0, -200)}} );
-
-				candyHolder.swapChildren(candies[i], airHead);
-
-				//candyHolder.getChildAt(8)
-			}
-
-			if (candies[i].scale.x > 0.02) {
-
-				if (candyBlur.blur > 0) {
-					candyBlur.blur -= 0.035;
-				} else {
-					candies[i].filters = [];
-					candyBlur.blur = 0;
-				}
-			}
-
-			if (candies[i].scale.x < 0.5 ) {
-				candyHolder.setChildIndex(candies[i], 0);
-				//candyHolder.swapChildren(candies[i], airHead);
-			}
-
-
-			if (candies[i].scale.x > 0.5  && candies[i].scale.x < 0.65 ) {
-				if (Utils.hitTest(candies[i], hitRect)) {
-					log('CANDY COLLISION');
-					candies[i].scale.x = candies[i].scale.y = 2;
-					t.set(candies[i], {pixi:{x:Utils.random(0, stageW), y:Utils.random(0, -200)}} );
-
-					handleScore();
-
-				}
-			}
-
-
-
-			//candies[i].y += 0.0001;
-			//t.set(candies[i], {pixi:{x:Utils.random(200, 400), y:Utils.random(stageH / 2 - 100, stageH / 2 + 100) }} );
-
+		if (candy0.scale.x < 0.545) {
+			//candyHolder.swapChildren(candy0, airHead);
+			candyHolder.setChildIndex(candy0, 0);
 		}
 
 	}
+
+
 
 
 	var bx, by;
 
 	function handleBg() {
-		mousePos = Utils.getMousePosition();
-
+		//mousePos = Utils.getMousePosition();
 		//log('MOUSE X = ' + mousePos.x);
 		//log('MOUSE Y = ' + mousePos.y);
+		//bx = -(mousePos.x / 1.328);
+		//by = -(mousePos.y / 1.6);
+		///bgHolder.x = bx * 0.15;
+		//bgHolder.y = by * 0.15;
 
-		bx = -(mousePos.x / 1.328);
-		by = -(mousePos.y / 1.6);
+		//bgHolder.scale.x = bgHolder.scale.y -= 0.0005;
+		//bgHolder.x += 0.005;
+		//bgHolder.y += 0.005;
+		if (sky_bg.scale.x > 0.8) {
+			sky_bg.scale.x = sky_bg.scale.y -= 0.0004;
+		}
 
-		bgHolder.x = bx * 0.15;
-		bgHolder.y = by * 0.15;
+	}
+
+	function handleTimer(delta) {
+		gameTime -= (1 / Math.round(ticker.FPS));
+		timerText.setText( Math.ceil(gameTime) );
+		elapsedTime += (1 / Math.round(ticker.FPS));
+
+		timerSectorLength = ((Math.PI / 180) * 360 / timerSectors) * elapsedTime;
+		interfaceHolder.removeChild(timerIcon);
+		timerIcon = new PIXI.Graphics();
+		timerIcon.lineStyle(6, 0xFF3300, 1);
+		timerIcon.arc(stageW - 80, stageH - 40, 10, 0 , timerSectorLength, false);
+		interfaceHolder.addChild(timerIcon);
+
+		if (Math.ceil(gameTime)  <= 0 ) {
+			ticker.stop();
+			//handleGameOver(true);
+		}
 	}
 
 	var speed = 20;
@@ -458,6 +481,8 @@ function init() {
 		upperRightArm.rotation = (dx / 10 * (Math.PI / 180));
 		lowerRightArm.rotation = (dx / 2.5 * (Math.PI / 180));
 
+		//log('HIT RECT WIDTH = ' + hitRect.width)
+
 
 		//log('HIT RECT X: ' + hitRect.toGlobal(app.stage.position).x );
 		//log('HIT RECT Y: ' + hitRect.toGlobal(app.stage.position).y );
@@ -487,9 +512,7 @@ function init() {
 
 	function setPosition() {
 
-		candyBlur = new PIXI.filters.BlurFilter();
-		candyBlur.blur = 10;
-		candyBlur.quality = 1;
+
 
 		// -----------
 		//  INTRO
@@ -500,12 +523,19 @@ function init() {
 		//  MAIN
 		// -----------
 
+
+			//bgHolder.pivot.set(stageW / 2 - bgHolder.width / 2, stageH / 2 - bgHolder.height / 2);
+
+			sky_bg.anchor.set(0.5);
+			sky_bg.scale.x = sky_bg.scale.y = 1.5;
 			bgHolder.addChild(sky_bg);
+			sky_bg.position.set(sky_bg.width / 2, sky_bg.height / 2)
+
 			bgHolder.position.set(stageW / 2 - bgHolder.width / 2, stageH / 2 - bgHolder.height / 2);
+
 
 			head.pivot.set(142, 368);
 			head.position.set(0, 0);
-
 
 			torso.pivot.set(32, 12);
 			torso.position.set(0, 12);
@@ -539,7 +569,6 @@ function init() {
 			lowerLeftLeg.pivot.set(14, 3);
 			lowerLeftLeg.position.set(32, 26);
 
-
 			leftArm.addChild(upperLeftArm);
 			leftArm.addChild(lowerLeftArm);
 
@@ -552,18 +581,15 @@ function init() {
 			rightLeg.addChild(upperRightLeg);
 			rightLeg.addChild(lowerRightLeg);
 
-
 			//airBody.addChild(upperLeftArm);
 			//airBody.addChild(lowerLeftArm);
 
 			airBody.addChild(leftArm);
 
-
 			airBody.addChild(pelvis)
 
 			airBody.addChild(rightLeg);
 			airBody.addChild(leftLeg);
-
 
 			rightLeg.pivot.set(14, -10);
 			rightLeg.position.set(0, 77);
@@ -573,7 +599,6 @@ function init() {
 			leftLeg.position.set(8, 74);
 
 			leftLeg.rotation = 0.5;
-
 
 			//airBody.addChild(upperRightArm);
 			//airBody.addChild(lowerRightArm);
@@ -586,10 +611,8 @@ function init() {
 
 			hitRect.position.set(-100, -150);
 
-
 			airHead.scale.set(0.75);
 			airHead.position.set(stageW / 2, stageH / 2);
-
 
 			airHead.interactive = true;
 			airHead.buttonMode = true;
@@ -603,6 +626,16 @@ function init() {
 			candy4.anchor.set(0.5);
 			candy5.anchor.set(0.5);
 			candy6.anchor.set(0.5);
+
+			candy0.filters = [candyBlur0];
+			candy1.filters = [candyBlur1];
+			candy2.filters = [candyBlur2];
+			candy3.filters = [candyBlur3];
+			candy4.filters = [candyBlur4];
+			candy5.filters = [candyBlur5];
+			candy6.filters = [candyBlur6];
+
+
 			candyHolder.addChild(candy0);
 			candyHolder.addChild(candy1);
 			candyHolder.addChild(candy2);
@@ -613,13 +646,15 @@ function init() {
 
 			candies = [candy0, candy1, candy2, candy3, candy4, candy5, candy6];
 
+
+
 			//candies = [candy0, candy1];
 
 			for ( var i = 0; i < candies.length; i++ ) {
-
-				candies[i].filters = [candyBlur];
-				candies[i].scale.x = candies[i].scale.y = 2;
-				t.set(candies[i], {pixi:{x:Utils.random(0, stageW), y:Utils.random(0, -200)}} );
+				candies[i].scale.x = candies[i].scale.y = Utils.random(2, 3);
+				t.set(candies[i], {pixi:{x:Utils.random(0, stageW), y:Utils.random(-2000, -200)}} );
+				//log( candies[i].filters );
+				candyFilters.push(candies[i].filters);
 
 			}
 
@@ -646,9 +681,6 @@ function init() {
 			interfaceHolder.addChild(timerText);
 			interfaceHolder.addChild(scoreIcon);
 			interfaceHolder.addChild(scoreText);
-
-
-
 
 
 			main.addChild(bgHolder);
@@ -678,6 +710,19 @@ function init() {
 		// -----------
 		//  MAIN
 		// -----------
+
+			candyBlur0 = new PIXI.filters.BlurFilter();
+			candyBlur1 = new PIXI.filters.BlurFilter();
+			candyBlur2 = new PIXI.filters.BlurFilter();
+			candyBlur3 = new PIXI.filters.BlurFilter();
+			candyBlur4 = new PIXI.filters.BlurFilter();
+			candyBlur5 = new PIXI.filters.BlurFilter();
+			candyBlur6 = new PIXI.filters.BlurFilter();
+			candyBlur7 = new PIXI.filters.BlurFilter();
+
+			candyBlur0.blur = candyBlur1.blur = candyBlur2.blur = candyBlur3.blur = candyBlur4.blur = candyBlur5.blur = candyBlur6.blur = candyBlur7.blur = 10;
+
+
 			main = new PIXI.Container();
 			bgHolder = new PIXI.Container();
 			interfaceHolder = new PIXI.Container();
@@ -718,7 +763,7 @@ function init() {
 			// - AIRHEAD
 			airHead = new PIXI.Container();
 
-			headTextures = [resources['ah_head_00.png'].texture, resources['ah_head_01.png'].texture, resources['ah_head_01.png'].texture, resources['ah_head_02.png'].texture, resources['ah_head_02.png'].texture, resources['ah_head_02.png'].texture, resources['ah_head_02.png'].texture, resources['ah_head_02.png'].texture, resources['ah_head_02.png'].texture, resources['ah_head_02.png'].texture, resources['ah_head_01.png'].texture, resources['ah_head_01.png'].texture, resources['ah_head_00.png'].texture];
+			headTextures = [resources['ah_head_00.png'].texture, resources['ah_head_01.png'].texture, resources['ah_head_01.png'].texture, resources['ah_head_02.png'].texture, resources['ah_head_02.png'].texture, resources['ah_head_02.png'].texture, resources['ah_head_02.png'].texture, resources['ah_head_02.png'].texture, resources['ah_head_02.png'].texture, resources['ah_head_02.png'].texture, resources['ah_head_01.png'].texture, resources['ah_head_01.png'].texture, resources['ah_head_01.png'].texture];
 
 			// -- Head
 			head = new PIXI.extras.AnimatedSprite(headTextures);
@@ -729,7 +774,7 @@ function init() {
 			hitRect.beginFill(0xFF3300);
 			hitRect.drawRect(0, 0, 200, 100);
 			hitRect.endFill();
-			hitRect.alpha = 0.5;
+			hitRect.alpha = 0.0;
 			hitRect.interactive = true;
 			hitRect.buttonMode = true;
 			hitRect.hitArea = new PIXI.Rectangle(0, 0, 200, 100);
@@ -814,16 +859,11 @@ function init() {
 
 
 	ticker.add( function(delta){
-		//handleBg(delta);
-
+		handleBg(delta);
 		handleAirHead(delta);
-		handleCandy();
-
-
+		handleCandy(delta);
+		handleTimer(delta);
 	});
-
-
-
 
 
 
