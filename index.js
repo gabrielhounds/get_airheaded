@@ -74,7 +74,7 @@ function init() {
 	var main, bgHolder, candyHolder, fgHolder, airheadHolder, hitRect;
 	var sky_bg;
 	var candy0, candy1, candy2, candy3, candy4, candy5, candy6;
-	var airHead, airBody, leftArm, rightArm, leftLeg, rightLeg, torso, head, pelvis, headTextures, ashleigh;
+	var airHead, airBody, lowerLeftArm, lowerRightArm, upperLeftArm, upperRightArm, lowerLeftLeg, lowerRightLeg, upperLeftLeg, upperRightLeg, torso, head, pelvis, headTextures;
 	var candies = [];
 
 	//ENDFRAME
@@ -288,20 +288,103 @@ function init() {
 		//log('MOUSE X = ' + mousePos.x);
 		//log('MOUSE Y = ' + mousePos.y);
 
-		//bx = -(mousePos.x / 1.328);
-		//by = -(mousePos.y / 1.6);
+		bx = -(mousePos.x / 1.328);
+		by = -(mousePos.y / 1.6);
 
-		//bgHolder.x = bx * 0.15;
-		//bgHolder.y = by * 0.15;
+		bgHolder.x = bx * 0.15;
+		bgHolder.y = by * 0.15;
+	}
+
+	var speed = 20;
+	var angle = 45;
+	var dx, dy, ax, ay;
+	var vx = 0;
+	var vy = 0;
+	var zx = 0, zy = 0;
+	var easing = 1.0;
+	var spring = 0.04;
+	var friction = 0.85;
+	var gravity = 2;
+	var bodySpring = 2;
+	var bodyFriction = 0.95;
+	var flopRate =  4.5;  //4.625;
+	var bodyFlopRate = 1.5;
+
+	function handleAirHead() {
+		mousePos = Utils.getMousePosition();
+		//dx = (mousePos.x - airHead.x) * easing;
+
+		if (mousePos.y > 0 && mousePos.y < stageH ) {
+			dy = ((mousePos.y - 120 ) - (airHead.y)) * easing
+		} else {
+			if (mousePos.y < 0) {
+				dy = ((0 - 120 ) - (airHead.y)) * easing;
+			} else if( mousePos.y > stageH + 30 ) {
+				dy = ((stageH - 120 ) - (airHead.y)) * easing;
+			}
+		}
+
+		if (mousePos.x > 0 && mousePos.x < stageW ) {
+			dx = (mousePos.x - airHead.x) * easing;
+		} else {
+			if (mousePos.x < 0) {
+				dx = (0 - airHead.x) * easing;;
+			} else if( mousePos.x > stageW ) {
+				dx = (stageW - airHead.x) * easing;
+			}
+		}
+
+		ax = dx * spring;
+		ay = dy * spring;
+		vx += ax;
+		vy += ay;
+		vx *= friction;
+		vy *= friction;
+
+		airHead.y += vy + 30;
+		airHead.x += vx;
+
+		head.rotation = (-dx / flopRate * (Math.PI / 180));
+		airBody.rotation = (dx / 8.5 * (Math.PI / 180));
+
+		rightLeg.rotation = (dx / 10.5 * (Math.PI / 180));
+
+		//upperRightLeg.rotation = (dy / 10.5 * (Math.PI / 180));
+
+		lowerRightLeg.rotation = (dx / 4.5 * (Math.PI / 180));
+
+		leftLeg.rotation = (dx / 10.5 * (Math.PI / 180)) + 0.25;
+		//upperLeftLeg.rotation = (dx / 8.5 * (Math.PI / 180));
+		lowerLeftLeg.rotation = (dx / 4.5 * (Math.PI / 180));
+		upperLeftArm.rotation = (dx / 10 * (Math.PI / 180));
+		lowerLeftArm.rotation = (dx / 1.5 * (Math.PI / 180));
+		upperRightArm.rotation = (dx / 10 * (Math.PI / 180));
+		lowerRightArm.rotation = (dx / 2.5 * (Math.PI / 180));
+
+
 
 	}
 
+	function setUpGame() {
+
+
+		airHead.on('pointerup', function() {
+			head.play();
+		});
+
+
+		head.onComplete = function() {
+			head.gotoAndStop(0);
+		}
+
+		ticker.start();
+	}
 
 	function buildStage() {
 
 		app.stage.addChild(main);
 
-		ticker.start();
+		setUpGame();
 	}
 
 	function setPosition() {
@@ -317,6 +400,99 @@ function init() {
 
 			bgHolder.addChild(sky_bg);
 			bgHolder.position.set(stageW / 2 - bgHolder.width / 2, stageH / 2 - bgHolder.height / 2);
+
+			head.pivot.set(142, 368);
+			head.position.set(0, 0);
+
+
+			torso.pivot.set(32, 12);
+			torso.position.set(0, 12);
+
+			upperRightArm.pivot.set(30, 60);
+			upperRightArm.position.set(-22, 70);
+
+			upperLeftArm.pivot.set(5, 5);
+			upperLeftArm.position.set(30, 14);
+
+			lowerRightArm.pivot.set(40, 5);
+			lowerRightArm.position.set(-44, 36);
+
+			lowerRightArm.rotation = (0.0);
+
+			lowerLeftArm.pivot.set(4, 2);
+			lowerLeftArm.position.set(50, 32);
+
+			pelvis.pivot.set(32, 1);
+			pelvis.position.set(6, 75);
+
+			upperRightLeg.pivot.set(14, 1);
+			upperRightLeg.position.set(0, -9);
+
+			upperLeftLeg.pivot.set(2, 6);
+			upperLeftLeg.position.set(2, 1);
+
+			lowerRightLeg.pivot.set(20, 5);
+			lowerRightLeg.position.set(1, 22);
+
+			lowerLeftLeg.pivot.set(14, 3);
+			lowerLeftLeg.position.set(32, 26);
+
+
+			leftArm.addChild(upperLeftArm);
+			leftArm.addChild(lowerLeftArm);
+
+			rightArm.addChild(upperRightArm);
+			rightArm.addChild(lowerRightArm);
+
+			leftLeg.addChild(upperLeftLeg);
+			leftLeg.addChild(lowerLeftLeg);
+
+			rightLeg.addChild(upperRightLeg);
+			rightLeg.addChild(lowerRightLeg);
+
+
+
+			//airBody.addChild(upperLeftArm);
+			//airBody.addChild(lowerLeftArm);
+
+			airBody.addChild(leftArm);
+
+
+			airBody.addChild(pelvis)
+
+			airBody.addChild(rightLeg);
+			airBody.addChild(leftLeg);
+
+
+			rightLeg.pivot.set(14, -10);
+			rightLeg.position.set(0, 77);
+
+			//leftLeg.pivot.set(2, 6);
+			leftLeg.pivot.set(0, 10);
+			leftLeg.position.set(8, 74);
+
+			leftLeg.rotation = 0.5;
+
+
+			//airBody.addChild(upperRightArm);
+			//airBody.addChild(lowerRightArm);
+			airBody.addChild(rightArm);
+			airBody.addChild(torso);
+
+			airHead.addChild(airBody);
+			airHead.addChild(head);
+			airHead.addChild(hitRect);
+
+			hitRect.position.set(-100, -250);
+
+
+			airHead.scale.set(0.75);
+			airHead.position.set(stageW / 2, stageH / 2);
+
+
+			airHead.interactive = true;
+			airHead.buttonMode = true;
+
 
 			scoreText.position.set(76, stageH - scoreText.height - 26);
 			scoreIcon.anchor.set(0.5);
@@ -343,6 +519,7 @@ function init() {
 
 
 			main.addChild(bgHolder);
+			main.addChild(airHead);
 			main.addChild(interfaceHolder);
 
 
@@ -403,6 +580,48 @@ function init() {
 			heart2 		= new PIXI.Sprite(resources['heart.png'].texture);
 			heart3 		= new PIXI.Sprite(resources['heart.png'].texture);
 
+			// - AIRHEAD
+			airHead = new PIXI.Container();
+
+			headTextures = [resources['ah_head_00.png'].texture, resources['ah_head_01.png'].texture, resources['ah_head_01.png'].texture, resources['ah_head_02.png'].texture, resources['ah_head_02.png'].texture, resources['ah_head_02.png'].texture, resources['ah_head_02.png'].texture, resources['ah_head_02.png'].texture, resources['ah_head_02.png'].texture, resources['ah_head_02.png'].texture, resources['ah_head_01.png'].texture, resources['ah_head_01.png'].texture, resources['ah_head_00.png'].texture];
+
+			// -- Head
+			head = new PIXI.extras.AnimatedSprite(headTextures);
+			head.loop = false;
+			head.animationSpeed = 0.7;
+
+			hitRect = new PIXI.Graphics();
+			hitRect.beginFill(0xFF3300);
+			hitRect.drawRect(0, 0, 200, 250);
+			hitRect.endFill();
+			hitRect.alpha = 0.5;
+			hitRect.interactive = true;
+			hitRect.buttonMode = true;
+			hitRect.hitArea = new PIXI.Rectangle(0, 0, 200, 250);
+
+			// -- Body
+			airBody = new PIXI.Container();
+
+			leftLeg = new PIXI.Container();
+			rightLeg = new PIXI.Container();
+			leftArm = new PIXI.Container();
+			rightArm = new PIXI.Container();
+
+			torso = new PIXI.Sprite(resources['ah_torso.png'].texture);
+			pelvis = new PIXI.Sprite(resources['ah_pelvis.png'].texture);
+
+			lowerLeftLeg = new PIXI.Sprite(resources['ah_lowerLeftLeg.png'].texture);
+			lowerRightLeg = new PIXI.Sprite(resources['ah_lowerRightLeg.png'].texture);
+
+			upperLeftLeg = new PIXI.Sprite(resources['ah_upperLeftLeg.png'].texture);
+			upperRightLeg = new PIXI.Sprite(resources['ah_upperRightLeg.png'].texture);
+
+			lowerRightArm = new PIXI.Sprite(resources['ah_lowerRightArm.png'].texture);
+			lowerLeftArm = new PIXI.Sprite(resources['ah_lowerLeftArm.png'].texture);
+
+			upperRightArm = new PIXI.Sprite(resources['ah_upperRightArm.png'].texture);
+			upperLeftArm = new PIXI.Sprite(resources['ah_upperLeftArm.png'].texture);
+
 
 		// -----------
 		//  END FRAME
@@ -421,11 +640,30 @@ function init() {
 		'sky_bg.jpg',
 		'heart.png',
 		'candy_00.png',
+
+		'ah_head_00.png',
+		'ah_head_01.png',
+		'ah_head_02.png',
+		'ah_lowerLeftArm.png',
+		'ah_lowerLeftLeg.png',
+		'ah_lowerRightArm.png',
+		'ah_lowerRightLeg.png',
+		'ah_pelvis.png',
+		'ah_torso.png',
+		'ah_upperLeftArm.png',
+		'ah_upperLeftLeg.png',
+		'ah_upperRightArm.png',
+		'ah_upperRightLeg.png',
+
+
 	]).on('progress', loadProgressHandler).load(setUp);
 
 
 	ticker.add( function(delta){
-		handleBg(delta);
+		//handleBg(delta);
+
+		handleAirHead(delta);
+
 		//bgHolder.x -= 0.1;
 		//bgHolder.y -= 0.1;
 	});
