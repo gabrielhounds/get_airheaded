@@ -75,6 +75,7 @@ function init() {
 	var sky_bg;
 	var candy0, candy1, candy2, candy3, candy4, candy5, candy6;
 	var candyBlur0, candyBlur1, candyBlur2, candyBlur3, candyBlur4, candyBlur5, candyBlur6;
+	var candyBrightness;
 	var airHead, airBody, lowerLeftArm, lowerRightArm, upperLeftArm, upperRightArm, lowerLeftLeg, lowerRightLeg, upperLeftLeg, upperRightLeg, torso, head, pelvis, headTextures;
 	var candies = [];
 	var candyBlur;
@@ -163,14 +164,15 @@ function init() {
 			r1.centerX = r1.toGlobal(app.stage.position).x + r1.width / 2;
 			r1.centerY = r1.toGlobal(app.stage.position).y + r1.height / 2;
 
-			r2.centerX = r2.toGlobal(app.stage.position).x + r2.width / 4 + 100;
-			r2.centerY = r2.toGlobal(app.stage.position).y + r2.height / 4 + 100;
+			r2.centerX = r2.toGlobal(app.stage.position).x + r2.width / 6 + 100;
+			//r2.centerY = r2.toGlobal(app.stage.position).y + r2.height / 20 + 110;
+			r2.centerY = r2.toGlobal(app.stage.position).y + 130;
 
 			r1.halfWidth = r1.width / 2;
 			r1.halfHeight = r1.height / 2;
 
 			r2.halfWidth = r2.width / 4;
-			r2.halfHeight = r2.width / 4;
+			r2.halfHeight = r2.height / 8;
 
 			vx = r1.centerX - r2.centerX;
 			vy = r1.centerY - r2.centerY;
@@ -203,32 +205,32 @@ function init() {
 
 	function initAudio() {
 		bgSound = new Howl({
-			src : ['https://c1.undertonevideo.com/clients/Airheads/sounds/bg-sound.mp3'],
+			src : ['sounds/bg-sound.mp3'],
 			volume: 0.5,
 			loop: true,
 		});
 		flapSound = new Howl({
-			src : ['https://c1.undertonevideo.com/clients/Airheads/sounds/jump-sound.mp3'],
+			src : ['sounds/jump-sound.mp3'],
 			volume: 0.5
 		});
 		buttonSound = new Howl({
-			src : ['https://c1.undertonevideo.com/clients/Airheads/sounds/button-sound.mp3'],
+			src : ['sounds/button-sound.mp3'],
 			volume: 0.5
 		});
 		eatSound = new Howl({
-			src : ['https://c1.undertonevideo.com/clients/Airheads/sounds/eat-sound.mp3'],
+			src : ['sounds/eat-sound.mp3'],
 			volume: 0.5
 		});
 		loseSound = new Howl({
-			src : ['https://c1.undertonevideo.com/clients/Airheads/sounds/lose-sound.mp3'],
+			src : ['sounds/lose-sound.mp3'],
 			volume: 0.5
 		});
 		winSound = new Howl({
-			src : ['https://c1.undertonevideo.com/clients/Airheads/sounds/win-sound.mp3'],
+			src : ['sounds/win-sound.mp3'],
 			volume: 0.5
 		});
 		overSound = new Howl({
-			src : ['https://c1.undertonevideo.com/clients/Airheads/sounds/over-sound.mp3'],
+			src : ['sounds/over-sound.mp3'],
 			volume: 0.5
 		});
 
@@ -237,9 +239,12 @@ function init() {
 			audioCount += 1;
 			//log(audioCount);
 			if (audioCount === 7) {
-				setTimeout( function() { bgSound.play(); ticker.start(); playing = true;}, 500);
-				intro.alpha = 0.0;
-				intro.destroy();
+				//setTimeout( function() { bgSound.play(); }, 500);
+
+				//setTimeout( function() { bgSound.play(); ticker.start(); playing = true;}, 500);
+				//intro.alpha = 0.0;
+				//intro.destroy();
+
 			}
 		}
 
@@ -304,72 +309,99 @@ function init() {
 
 	function handleScore() {
 		head.play();
+		eatSound.play();
+
+		score += 1;
+		scoreText.setText(score);
+
 		head.onComplete = function() {
 			head.gotoAndStop(1);
 		}
 	}
 
 
-	var cx, cy, blurAmount, cnt = 0;
+	var cx0, cy0, cx1, cy1, blurAmount, cnt = 0;
 	var vpX, vpY, fl = 250, xPos, yPos, zPos, scale;
+
+	var cbcm0 = 0.5;
 
 	function handleCandy(delta) {
 
-		zPos += 5;
-		vpX = stageW / 2;
-		vpY = stageH / 2;
+		cy0 = stageH / 2 - candy0.y;
+		cx0 = stageW / 2 - candy0.x;
 
-		xPos = candy0.x;
-		yPos = candy0.y;
+		cy1 = stageH / 2 - candy1.y;
+		cx1 = stageW / 2 - candy1.x;
 
-		cy = stageH / 2 - candy0.y;
-		cx = stageW / 2 - candy0.x;
+		candyBlur0.blur = candy0.scale.x * 3;
 
-		scale = fl / (fl + zPos);
+		candyBlur1.blur = candy1.scale.x * 3;
 
-		//candy0.y = vpY + yPos * scale;
-		//candy0.x = vpX + xPos * scale;
+		cbcm0 = Math.cos(candy0.scale.x / 2.0)
+		candyBrightness0.brightness(cbcm0);
 
-		//candy0.scale.x = candy0.scale.y = scale;
+		cbcm1 = Math.cos(candy1.scale.x / 2.5)
+		candyBrightness1.brightness(cbcm1);
 
-		//log('WIDTH = ' + candy0.width + ' HEIGHT = ' + candy0.height)
-
-		candyBlur0.blur = candy0.scale.x * 4;
-
-		//log(candy0.scale.x * 3);
-
-
-		if (candy0.scale.x < 0.6 && candy0.scale.x > 0.55 ) {
+		if (candy0.scale.x < 0.50 && candy0.scale.x > 0.45 ) {
 			if (Utils.hitTest(candy0, hitRect)) {
 				log('CANDY COLLISION');
-				t.set(candy0, {pixi:{x:Utils.random(-400, stageW + 400), y:Utils.random(-4000, -200)}} );
+				t.set(candy0, {pixi:{x:Utils.random(-400, stageW + 400), y:Utils.random(-4000, -200) }} );
 				candy0.scale.x = candy0.scale.y = Utils.random(2, 4);
 				candyBlur0.blur = 10;
 				//candyHolder.swapChildren(candy0, airHead);
+				handleScore();
+			}
+		}
 
+		if (candy1.scale.x < 0.50 && candy1.scale.x > 0.45 ) {
+			if (Utils.hitTest(candy1, hitRect)) {
+				log('CANDY COLLISION');
+				t.set(candy1, {pixi:{x:Utils.random(-400, stageW + 400), y:Utils.random(600, 4000)     }} );
+				candy1.scale.x = candy1.scale.y = Utils.random(2, 4);
+				candyBlur1.blur = 10;
+				//candyHolder.swapChildren(candy0, airHead);
 				handleScore();
 			}
 		}
 
 		if (candy0.scale.x > 0) {
-			candy0.y += cy * 0.04;
-			candy0.x += cx * 0.005;
-			candy0.scale.x = candy0.scale.y -= 0.025;
+			candy0.y += cy0 * 0.04;
+			candy0.x += cx0 * 0.005;
+			candy0.scale.x = candy0.scale.y -= 0.032;
 		} else {
 			t.set(candy0, {pixi:{x:Utils.random(-400, stageW + 400), y:Utils.random(-4000, -200)}} );
 			candy0.scale.x = candy0.scale.y = Utils.random(2, 4);
 			candyBlur0.blur = 10;
 			candyHolder.swapChildren(candy0, airHead);
-			head.gotoAndStop(0);
-
-
-
-			//candy0.scale.y = Utils.random(-4000, -200);
+			//head.gotoAndStop(0);
 		}
 
-		if (candy0.scale.x < 0.545) {
-			//candyHolder.swapChildren(candy0, airHead);
+		if (candy1.scale.x > 0) {
+			candy1.y += cy1 * 0.04;
+			candy1.x += cx1 * 0.005;
+			candy1.scale.x = candy1.scale.y -= 0.040;
+			candy1.rotation += 0.025;
+		} else {
+			t.set(candy1, {pixi:{x:Utils.random(-200, stageW + 200), y:Utils.random(500, 2000)}} );
+			candy1.scale.x = candy1.scale.y = Utils.random(2, 4);
+			candyBlur1.blur = 10;
+			candyHolder.swapChildren(candy1, airHead);
+			//head.gotoAndStop(0);
+		}
+
+		if (candy0.scale.x < 0.45) {
 			candyHolder.setChildIndex(candy0, 0);
+			candyBlur0.blur += 1.5;
+		}
+
+		if (candy1.scale.x < 0.45) {
+			candyHolder.setChildIndex(candy1, 0);
+			candyBlur1.blur += 1.5;
+		}
+
+		if (candy0.scale.x < 0.35) {
+			//candyBlur0.blur += 1.0;
 		}
 
 	}
@@ -380,17 +412,21 @@ function init() {
 	var bx, by;
 
 	function handleBg() {
-		//mousePos = Utils.getMousePosition();
+		mousePos = Utils.getMousePosition();
 		//log('MOUSE X = ' + mousePos.x);
 		//log('MOUSE Y = ' + mousePos.y);
+
 		//bx = -(mousePos.x / 1.328);
 		//by = -(mousePos.y / 1.6);
-		///bgHolder.x = bx * 0.15;
+
+		//bgHolder.x = bx * 0.15;
 		//bgHolder.y = by * 0.15;
 
 		//bgHolder.scale.x = bgHolder.scale.y -= 0.0005;
 		//bgHolder.x += 0.005;
 		//bgHolder.y += 0.005;
+
+
 		if (sky_bg.scale.x > 0.8) {
 			sky_bg.scale.x = sky_bg.scale.y -= 0.0004;
 		}
@@ -410,7 +446,7 @@ function init() {
 		interfaceHolder.addChild(timerIcon);
 
 		if (Math.ceil(gameTime)  <= 0 ) {
-			ticker.stop();
+			//ticker.stop();
 			//handleGameOver(true);
 		}
 	}
@@ -490,6 +526,8 @@ function init() {
 	}
 
 	function setUpGame() {
+
+		initAudio();
 
 		airHead.on('pointerup', function() {
 			head.play();
@@ -627,8 +665,8 @@ function init() {
 			candy5.anchor.set(0.5);
 			candy6.anchor.set(0.5);
 
-			candy0.filters = [candyBlur0];
-			candy1.filters = [candyBlur1];
+			candy0.filters = [candyBlur0, candyBrightness0];
+			candy1.filters = [candyBlur1, candyBrightness1];
 			candy2.filters = [candyBlur2];
 			candy3.filters = [candyBlur3];
 			candy4.filters = [candyBlur4];
@@ -720,6 +758,12 @@ function init() {
 			candyBlur6 = new PIXI.filters.BlurFilter();
 			candyBlur7 = new PIXI.filters.BlurFilter();
 
+			candyBrightness0 = new PIXI.filters.ColorMatrixFilter();
+			candyBrightness0.brightness(0.5);
+
+			candyBrightness1 = new PIXI.filters.ColorMatrixFilter();
+			candyBrightness1.brightness(0.5);
+
 			candyBlur0.blur = candyBlur1.blur = candyBlur2.blur = candyBlur3.blur = candyBlur4.blur = candyBlur5.blur = candyBlur6.blur = candyBlur7.blur = 10;
 
 
@@ -734,7 +778,7 @@ function init() {
 
 			// - interface
 			// -- score
-			scoreText 	= new PIXI.Text('00');
+			scoreText 	= new PIXI.Text('0');
 			scoreIcon 	= new PIXI.Sprite(resources['candy_00.png'].texture);
 			scoreText.style = Text.interfaceTextStyle;
 
@@ -805,7 +849,7 @@ function init() {
 			// - Candy
 			candyHolder 	= new PIXI.Container();
 			candy0 			= new PIXI.Sprite(resources['candy_01.png'].texture);
-			candy1 			= new PIXI.Sprite(resources['candy_01.png'].texture);
+			candy1 			= new PIXI.Sprite(resources['candy_06.png'].texture);
 			candy2 			= new PIXI.Sprite(resources['candy_02.png'].texture);
 			candy3 			= new PIXI.Sprite(resources['candy_03.png'].texture);
 			candy4 			= new PIXI.Sprite(resources['candy_04.png'].texture);
