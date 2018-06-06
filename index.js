@@ -118,6 +118,7 @@ function init() {
 	bgSpeedMod 			= 0.0,
 	candySpeedMod 		= 0.0,
 	clickCount			= 0,
+	missRate 			= 0,
 
 	won, lost,
 
@@ -136,6 +137,8 @@ function init() {
 
 	ticker.autoStart = false;
 	introTicker.autoStart = false;
+
+	//ticker.speed = 0.1;
 
 	ticker.stop();
 	introTicker.stop();
@@ -274,10 +277,10 @@ function init() {
 	      	if (_height > 500) {
 				//log(screenSize);
 				$(game).css({width:'100%', height:500});
-	          	app = new Application({width : _width, height : 500, forceCanvas : true});
+	          	app = new Application({width : _width, height : 500});
 	        } else {
 	          $(game).css({width:'100%', height:'100%'});
-	          app = new Application({width : _width, height : _height, forceCanvas : true});
+	          app = new Application({width : _width, height : _height});
 	        }
 		} else if ( _width < 728 ) {
 
@@ -328,7 +331,7 @@ function init() {
 
 	function handleCandy(delta) {
 
-		log(candy0.x);
+		//log(candy0.scale.x);
 
 		cy0 = stageH / 2 - candy0.y;
 		cx0 = stageW / 2 - candy0.x;
@@ -354,6 +357,7 @@ function init() {
 				candyBlur0.blur = 10;
 				//candyHolder.swapChildren(candy0, airHead);
 				candy0.gotoAndStop(Utils.random(0, 6));
+				missRate = 0;
 				handleScore();
 			}
 		}
@@ -366,6 +370,7 @@ function init() {
 				candyBlur1.blur = 10;
 				//candyHolder.swapChildren(candy0, airHead);
 				candy1.gotoAndStop(Utils.random(0, 6));
+				missRate = 0;
 				handleScore();
 			}
 		}
@@ -380,12 +385,14 @@ function init() {
 				candy0.rotation = 0;
 			}
 		} else {
+			// RESET CANDY 0
 			t.set(candy0, {pixi:{x:Utils.random(-400, stageW + 400), y:Utils.random(-4000, -200)}} );
 			candy0.scale.x = candy0.scale.y = Utils.random(2, 4);
 			candyBlur0.blur = 10;
 			candy0.gotoAndStop(Utils.random(0, 6));
 			candyHolder.swapChildren(candy0, airHead);
 			//head.gotoAndStop(0);
+			missRate += 1;
 
 		}
 
@@ -400,12 +407,14 @@ function init() {
 				candy1.rotation = 0;
 			}
 		} else {
+			// RESET CANDY 1
 			t.set(candy1, {pixi:{x:Utils.random(-200, stageW + 200), y:Utils.random(500, 2000)}} );
 			candy1.scale.x = candy1.scale.y = Utils.random(2, 4);
 			candyBlur1.blur = 10;
 			candy1.gotoAndStop(Utils.random(0, 6));
 			candyHolder.swapChildren(candy1, airHead);
 			//head.gotoAndStop(0);
+			missRate += 1;
 		}
 
 		if (candy0.scale.x < 0.45) {
@@ -421,6 +430,8 @@ function init() {
 		if (candy0.scale.x < 0.35) {
 			//candyBlur0.blur += 1.0;
 		}
+
+		log(missRate);
 
 	}
 
@@ -485,6 +496,13 @@ function init() {
 	var bodyFlopRate = 1.5;
 
 	function handleAirHead() {
+
+		if (missRate > 5) {
+			head.gotoAndStop(0);
+		}
+
+
+
 		mousePos = Utils.getMousePosition();
 		//dx = (mousePos.x - airHead.x) * easing;
 
@@ -678,33 +696,38 @@ function init() {
 
 			candy0.anchor.set(0.5);
 			candy1.anchor.set(0.5);
-			candy2.anchor.set(0.5);
-			candy3.anchor.set(0.5);
-			candy4.anchor.set(0.5);
-			candy5.anchor.set(0.5);
-			candy6.anchor.set(0.5);
+			//candy2.anchor.set(0.5);
+			//candy3.anchor.set(0.5);
+			//candy4.anchor.set(0.5);
+			//candy5.anchor.set(0.5);
+			//candy6.anchor.set(0.5);
 
 			candy0.filters = [candyBlur0, candyBrightness0];
 			candy1.filters = [candyBlur1, candyBrightness1];
-			candy2.filters = [candyBlur2];
-			candy3.filters = [candyBlur3];
-			candy4.filters = [candyBlur4];
-			candy5.filters = [candyBlur5];
-			candy6.filters = [candyBlur6];
+			//candy2.filters = [candyBlur2];
+			//candy3.filters = [candyBlur3];
+			//candy4.filters = [candyBlur4];
+			//candy5.filters = [candyBlur5];
+			//candy6.filters = [candyBlur6];
 
 
 			candyHolder.addChild(candy0);
 			candyHolder.addChild(candy1);
-			candyHolder.addChild(candy2);
-			candyHolder.addChild(candy3);
-			candyHolder.addChild(candy4);
-			candyHolder.addChild(candy5);
-			candyHolder.addChild(candy6);
+			//candyHolder.addChild(candy2);
+			//candyHolder.addChild(candy3);
+			//candyHolder.addChild(candy4);
+			//candyHolder.addChild(candy5);
+			//candyHolder.addChild(candy6);
 
-			candies = [candy0, candy1, candy2, candy3, candy4, candy5, candy6];
+			//candies = [candy0, candy1, candy2, candy3, candy4, candy5, candy6];
 
+			candy0.scale.x = candy0.scale.y = Utils.random(2, 3);
+			t.set(candy0, {pixi:{x:Utils.random(0, stageW), y:Utils.random(-2000, -200)}} );
 
+			candy1.scale.x = candy1.scale.y = Utils.random(2, 3);
+			t.set(candy1, {pixi:{x:Utils.random(0, stageW), y:Utils.random(stageH + 50, stageH + 2000)}} );
 
+			/*
 			//candies = [candy0, candy1];
 
 			for ( var i = 0; i < candies.length; i++ ) {
@@ -712,8 +735,8 @@ function init() {
 				t.set(candies[i], {pixi:{x:Utils.random(0, stageW), y:Utils.random(-2000, -200)}} );
 				//log( candies[i].filters );
 				candyFilters.push(candies[i].filters);
-
 			}
+			*/
 
 
 			scoreText.position.set(76, stageH - scoreText.height - 26);
