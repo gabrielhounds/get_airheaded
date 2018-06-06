@@ -77,6 +77,7 @@ function init() {
 	var candyBlur0, candyBlur1, candyBlur2, candyBlur3, candyBlur4, candyBlur5, candyBlur6;
 	var candyBrightness;
 	var airHead, airBody, lowerLeftArm, lowerRightArm, upperLeftArm, upperRightArm, lowerLeftLeg, lowerRightLeg, upperLeftLeg, upperRightLeg, torso, head, pelvis, headTextures;
+	var candyTextures;
 	var candies = [];
 	var candyBlur;
 	var candyFilters = [];
@@ -327,6 +328,8 @@ function init() {
 
 	function handleCandy(delta) {
 
+		log(candy0.x);
+
 		cy0 = stageH / 2 - candy0.y;
 		cx0 = stageW / 2 - candy0.x;
 
@@ -350,6 +353,7 @@ function init() {
 				candy0.scale.x = candy0.scale.y = Utils.random(2, 4);
 				candyBlur0.blur = 10;
 				//candyHolder.swapChildren(candy0, airHead);
+				candy0.gotoAndStop(Utils.random(0, 6));
 				handleScore();
 			}
 		}
@@ -361,6 +365,7 @@ function init() {
 				candy1.scale.x = candy1.scale.y = Utils.random(2, 4);
 				candyBlur1.blur = 10;
 				//candyHolder.swapChildren(candy0, airHead);
+				candy1.gotoAndStop(Utils.random(0, 6));
 				handleScore();
 			}
 		}
@@ -369,23 +374,36 @@ function init() {
 			candy0.y += cy0 * 0.04;
 			candy0.x += cx0 * 0.005;
 			candy0.scale.x = candy0.scale.y -= 0.032;
+			if (candy0.currentFrame === 4 || candy0.currentFrame === 5) {
+				candy0.rotation += 0.025;
+			} else {
+				candy0.rotation = 0;
+			}
 		} else {
 			t.set(candy0, {pixi:{x:Utils.random(-400, stageW + 400), y:Utils.random(-4000, -200)}} );
 			candy0.scale.x = candy0.scale.y = Utils.random(2, 4);
 			candyBlur0.blur = 10;
+			candy0.gotoAndStop(Utils.random(0, 6));
 			candyHolder.swapChildren(candy0, airHead);
 			//head.gotoAndStop(0);
+
 		}
 
 		if (candy1.scale.x > 0) {
 			candy1.y += cy1 * 0.04;
 			candy1.x += cx1 * 0.005;
 			candy1.scale.x = candy1.scale.y -= 0.040;
-			candy1.rotation += 0.025;
+			//candy1.rotation += 0.025;
+			if (candy1.currentFrame === 4 || candy1.currentFrame === 5) {
+				candy1.rotation += 0.025;
+			} else {
+				candy1.rotation = 0;
+			}
 		} else {
 			t.set(candy1, {pixi:{x:Utils.random(-200, stageW + 200), y:Utils.random(500, 2000)}} );
 			candy1.scale.x = candy1.scale.y = Utils.random(2, 4);
 			candyBlur1.blur = 10;
+			candy1.gotoAndStop(Utils.random(0, 6));
 			candyHolder.swapChildren(candy1, airHead);
 			//head.gotoAndStop(0);
 		}
@@ -528,6 +546,7 @@ function init() {
 	function setUpGame() {
 
 		initAudio();
+		Howler.volume(0.02);
 
 		airHead.on('pointerup', function() {
 			head.play();
@@ -848,8 +867,18 @@ function init() {
 
 			// - Candy
 			candyHolder 	= new PIXI.Container();
-			candy0 			= new PIXI.Sprite(resources['candy_01.png'].texture);
-			candy1 			= new PIXI.Sprite(resources['candy_06.png'].texture);
+
+			candyTextures = [resources['candy_01.png'].texture, resources['candy_02.png'].texture, resources['candy_03.png'].texture, resources['candy_04.png'].texture, resources['candy_05.png'].texture, resources['candy_06.png'].texture];
+
+
+			candy0 = new PIXI.extras.AnimatedSprite(candyTextures);
+			candy1 = new PIXI.extras.AnimatedSprite(candyTextures);
+			candy0.gotoAndStop(Utils.random(0, 6));
+			candy1.gotoAndStop(Utils.random(0, 6));
+
+
+			//candy0 			= new PIXI.Sprite(resources['candy_01.png'].texture);
+			//candy1 			= new PIXI.Sprite(resources['candy_06.png'].texture);
 			candy2 			= new PIXI.Sprite(resources['candy_02.png'].texture);
 			candy3 			= new PIXI.Sprite(resources['candy_03.png'].texture);
 			candy4 			= new PIXI.Sprite(resources['candy_04.png'].texture);
