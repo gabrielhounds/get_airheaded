@@ -431,7 +431,7 @@ function init() {
 			//candyBlur0.blur += 1.0;
 		}
 
-		log(missRate);
+		//log(missRate);
 
 	}
 
@@ -554,14 +554,23 @@ function init() {
 		lowerRightArm.rotation = (dx / 2.5 * (Math.PI / 180));
 
 		//log('HIT RECT WIDTH = ' + hitRect.width)
-
-
 		//log('HIT RECT X: ' + hitRect.toGlobal(app.stage.position).x );
 		//log('HIT RECT Y: ' + hitRect.toGlobal(app.stage.position).y );
 
 	}
 
 	function setUpGame() {
+
+		log(heartHolder.x);
+
+
+		var dx = heartHolder.x - scoreText.x;
+		var dy = heartHolder.y - scoreText.y;
+
+		var dist = Math.sqrt(dx * dx + dy * dy);
+
+		log(dist);
+
 
 		initAudio();
 		Howler.volume(0.02);
@@ -960,6 +969,8 @@ function init() {
 		handleCandy(delta);
 		handleTimer(delta);
 	});
+
+
 
 
 
