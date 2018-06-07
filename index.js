@@ -75,7 +75,8 @@ function init() {
 	var sky_bg;
 	var candy0, candy1, candy2, candy3, candy4, candy5, candy6;
 	var candyBlur0, candyBlur1, candyBlur2, candyBlur3, candyBlur4, candyBlur5, candyBlur6;
-	var candyBrightness;
+	var catBlur, catBrightness;
+	var candyBrightness1, candyBrightness2;
 	var airHead, airBody, lowerLeftArm, lowerRightArm, upperLeftArm, upperRightArm, lowerLeftLeg, lowerRightLeg, upperLeftLeg, upperRightLeg, torso, head, pelvis, headTextures;
 	var candyTextures;
 	var candies = [];
@@ -442,10 +443,11 @@ function init() {
 	}
 
 
-	var cx0, cy0, cx1, cy1, blurAmount, cnt = 0;
+	var cx0, cy0, cx1, cy1, cyt, cxt, blurAmount, cnt = 0;
 	var vpX, vpY, fl = 250, xPos, yPos, zPos, scale;
 
-	var cbcm0 = 0.5;
+	var cbcm0 = 0.5, cbcm1 = 0.5;
+	var catcm = 0.5
 
 	function resetCandyPos0() {
 		t.set(candy0, {pixi:{x:Utils.random(-200, stageW + 200), y:Utils.random(-100, -4000) }} );
@@ -472,15 +474,22 @@ function init() {
 		cy1 = stageH / 2 - candy1.y;
 		cx1 = stageW / 2 - candy1.x;
 
-		candyBlur0.blur = candy0.scale.x * 3;
+		cyt = stageH / 2 - cat.y;
+		cxt = stageW / 2 - cat.x;
 
+		candyBlur0.blur = candy0.scale.x * 3;
 		candyBlur1.blur = candy1.scale.x * 3;
+
+		catBlur.blur = cat.scale.x * 3;
 
 		cbcm0 = Math.cos(candy0.scale.x / 2.0)
 		candyBrightness0.brightness(cbcm0);
 
 		cbcm1 = Math.cos(candy1.scale.x / 2.5)
 		candyBrightness1.brightness(cbcm1);
+
+		catcm = Math.cos(cat.scale.x / 2.5)
+		catBrightness.brightness(catcm);
 
 		if (candy0.scale.x < 0.50 && candy0.scale.x > 0.45 ) {
 			if (Utils.hitTest(candy0, hitRect)) {
@@ -529,7 +538,6 @@ function init() {
 			candyHolder.swapChildren(candy0, airHead);
 			//head.gotoAndStop(0);
 			missRate += 1;
-
 		}
 
 		if (candy1.scale.x > 0) {
@@ -554,6 +562,23 @@ function init() {
 			missRate += 1;
 		}
 
+		if (cat.scale.x > 0) {
+			cat.y += cyt * 0.04;
+			cat.x += cxt * 0.005;
+			cat.scale.x = cat.scale.y -= 0.03;
+		} else {
+			// RESET CAT
+			t.set(cat, {pixi:{x:Utils.random(-100, stageW + 100), y:Utils.random(stageH + 100, stageH + 3500)}} );
+			cat.scale.x = cat.scale.y = 4;
+			catBlur.blur = 10;
+
+			//candy0.gotoAndStop(Utils.random(0, 6));
+			//resetCandyPos0();
+			//candyHolder.swapChildren(candy0, airHead);
+			//head.gotoAndStop(0);
+			//missRate += 1;
+		}
+
 		if (candy0.scale.x < 0.45) {
 			candyHolder.setChildIndex(candy0, 0);
 			candyBlur0.blur += 1.5;
@@ -569,6 +594,10 @@ function init() {
 		}
 
 		//log(missRate);
+
+	}
+
+	function handleCat() {
 
 	}
 
@@ -921,6 +950,9 @@ function init() {
 
 		candy0.filters = [candyBlur0, candyBrightness0];
 		candy1.filters = [candyBlur1, candyBrightness1];
+		cat.filters = [catBlur, catBrightness];
+
+
 		//candy2.filters = [candyBlur2];
 		//candy3.filters = [candyBlur3];
 		//candy4.filters = [candyBlur4];
@@ -930,6 +962,7 @@ function init() {
 
 		candyHolder.addChild(candy0);
 		candyHolder.addChild(candy1);
+		candyHolder.addChild(cat);
 		//candyHolder.addChild(candy2);
 		//candyHolder.addChild(candy3);
 		//candyHolder.addChild(candy4);
@@ -943,6 +976,9 @@ function init() {
 
 		candy1.scale.x = candy1.scale.y = Utils.random(2, 3);
 		t.set(candy1, {pixi:{x:Utils.random(0, stageW), y:Utils.random(stageH + 50, stageH + 2000)}} );
+
+		cat.scale.x = candy1.scale.y = 3;
+		t.set(cat, {pixi:{x:Utils.random(0, stageW), y:Utils.random(stageH + 50, stageH + 2000)}} );
 
 		/*
 		//candies = [candy0, candy1];
@@ -978,7 +1014,6 @@ function init() {
 		interfaceHolder.addChild(timerText);
 		interfaceHolder.addChild(scoreIcon);
 		interfaceHolder.addChild(scoreText);
-
 
 		main.addChild(bgHolder);
 		//main.addChild(airHead);
@@ -1075,11 +1110,16 @@ function init() {
 		candyBlur6 = new PIXI.filters.BlurFilter();
 		candyBlur7 = new PIXI.filters.BlurFilter();
 
+		catBlur = new PIXI.filters.BlurFilter();
+
 		candyBrightness0 = new PIXI.filters.ColorMatrixFilter();
 		candyBrightness0.brightness(0.5);
 
 		candyBrightness1 = new PIXI.filters.ColorMatrixFilter();
 		candyBrightness1.brightness(0.5);
+
+		catBrightness = new PIXI.filters.ColorMatrixFilter();
+		catBrightness.brightness(0.5);
 
 		candyBlur0.blur = candyBlur1.blur = candyBlur2.blur = candyBlur3.blur = candyBlur4.blur = candyBlur5.blur = candyBlur6.blur = candyBlur7.blur = 10;
 
@@ -1168,20 +1208,21 @@ function init() {
 
 		candyTextures = [resources['candy_01.png'].texture, resources['candy_02.png'].texture, resources['candy_03.png'].texture, resources['candy_04.png'].texture, resources['candy_05.png'].texture, resources['candy_06.png'].texture];
 
-
 		candy0 = new PIXI.extras.AnimatedSprite(candyTextures);
 		candy1 = new PIXI.extras.AnimatedSprite(candyTextures);
 		candy0.gotoAndStop(Utils.random(0, 6));
 		candy1.gotoAndStop(Utils.random(0, 6));
 
+		cat = new PIXI.Sprite(resources['cat.png'].texture);
+
 
 		//candy0 			= new PIXI.Sprite(resources['candy_01.png'].texture);
 		//candy1 			= new PIXI.Sprite(resources['candy_06.png'].texture);
-		candy2 			= new PIXI.Sprite(resources['candy_02.png'].texture);
-		candy3 			= new PIXI.Sprite(resources['candy_03.png'].texture);
-		candy4 			= new PIXI.Sprite(resources['candy_04.png'].texture);
-		candy5 			= new PIXI.Sprite(resources['candy_05.png'].texture);
-		candy6 			= new PIXI.Sprite(resources['candy_06.png'].texture);
+		//candy2 			= new PIXI.Sprite(resources['candy_02.png'].texture);
+		//candy3 			= new PIXI.Sprite(resources['candy_03.png'].texture);
+		//candy4 			= new PIXI.Sprite(resources['candy_04.png'].texture);
+		//candy5 			= new PIXI.Sprite(resources['candy_05.png'].texture);
+		//candy6 			= new PIXI.Sprite(resources['candy_06.png'].texture);
 
 
 		// -----------
@@ -1240,6 +1281,7 @@ function init() {
 		'candy_04.png',
 		'candy_05.png',
 		'candy_06.png',
+		'cat.png',
 
 		'ah_head_00.png',
 		'ah_head_01.png',
