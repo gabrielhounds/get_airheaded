@@ -1,5 +1,5 @@
 $(document).ready(function(){
-	init();
+	setTimeout( function() { init(); }, 500);
 });
 
 function init() {
@@ -24,7 +24,7 @@ function init() {
 			align : 'center',
 			fontFamily: 'uniform_roundedbold, Arial',
 			fontSize: '28px',
-			letterSpacing: -1,
+			letterSpacing: 1,
 			fill: '0xFFFFFF',
 		});
 
@@ -561,17 +561,6 @@ function init() {
 
 	function setUpGame() {
 
-		log(heartHolder.x);
-
-
-		var dx = heartHolder.x - scoreText.x;
-		var dy = heartHolder.y - scoreText.y;
-
-		var dist = Math.sqrt(dx * dx + dy * dy);
-
-		log(dist);
-
-
 		initAudio();
 		Howler.volume(0.02);
 
@@ -579,28 +568,111 @@ function init() {
 			head.play();
 		});
 
-
 		head.onComplete = function() {
 			head.gotoAndStop(0);
 		}
 
-		ticker.start();
+		tlOutro.add('begin')
+		.to(main, 				0.6, {pixi:{blurX:0.0, blurY:0.0}, ease:Power2.easeOut})
+		//.to(cabLogo, 			0.4, {pixi:{y:'-=100', alpha:0.0}, ease:Power3.easeOut}, '-=0.55')
+		//.to(cabLogo.children, 	0.4, {pixi:{scale:0.5, alpha:0.0}, ease:Power2.easeOut}, '-=0.55')
+		.to(ctaHolder, 			0.4, {pixi:{y:'+=100', alpha:0.0}, ease:Power3.easeOut}, '-=0.40')
+		.to(instructionText, 	0.4, {pixi:{x:'+=300', alpha:0.0}, ease:Power3.easeOut}, '-=0.40')
+		.to(overlay, 			0.4, {pixi:{x:'+=300', alpha:0.0}, ease:Power3.easeOut}, '-=0.40')
+		.to(ahLogo, 			0.4, {pixi:{x:'+=300', alpha:0.0,  scale:0}, ease:Power3.easeOut}, '-=0.40')
+		.addCallback(destroyIntro)
+		.add('end');
+
+		function destroyIntro() {
+			intro.alpha = 0.0;
+			intro.destroy();
+			playing = true;
+			ticker.start();
+		}
+
+		tlOutro.play();
+
+		//playing = true;
+		//ticker.start();
 	}
 
 	function buildStage() {
 
-		app.stage.addChild(main);
+		tlIntro.add('begin')
+		.from(main, 		0.5, {pixi:{alpha:0}}, '+=1.0')
+		//.from(cabCatch, 	0.8, {pixi:{scale:0.3, alpha:0}, ease:Elastic.easeOut})
+		//.from(cabCandy4, 	0.6, {pixi:{scale:0.5, alpha:0}, ease:Elastic.easeOut}, '-=0.7')
+		//.from(cabA, 		0.8, {pixi:{scale:0.3, alpha:0}, ease:Elastic.easeOut}, '-=0.7')
+		//.from(cabCandy3, 	0.6, {pixi:{scale:1.2, alpha:0}, ease:Elastic.easeOut}, '-=0.75')
+		//.from(cabBite, 		0.8, {pixi:{scale:0.3, alpha:0}, ease:Elastic.easeOut}, '-=0.7')
+		//.from(cabCandy2, 	0.6, {pixi:{scale:1.2, alpha:0}, ease:Elastic.easeOut}, '-=0.75')
+		//.from(cabBg, 		0.2, {pixi:{scale:0, alpha:0}, ease:Power3.easeOut}, '-=0.7')
+		//.from(cabCandy1, 	0.6, {pixi:{scale:1.2, alpha:0}, ease:Elastic.easeOut}, '-=0.75')
+		.from(overlay, 		0.7, {pixi:{x:'+=40', alpha:0}, ease:Elastic.easeOut}, '-=0.0')
+		.from(instructionText, 0.4, {pixi:{y:'+=40', alpha:0},ease:Elastic.easeOut}, '-=0.6')
+		.from(ahLogo, 		0.8, {pixi:{scale:0.7, alpha:0}, ease:Power3.easeOut}, '-=0.2')
+		.addCallback(function() { ahLogo.play() }, '-=0.85')
+		.from(ctaHolder, 	0.6, {pixi:{y:'+=40', alpha:0, scale:0.5}, ease:Elastic.easeOut}, '-=0.6')
+		.add('end');
 
-		setUpGame();
+		app.stage.addChild(main);
+		app.stage.addChild(intro);
+
+		ctaHolder.on('mouseover', function(e){
+			t.to(ctaBg, 0.6, {pixi:{scale:1.2}, ease:Elastic.easeOut});
+			t.to(ctaText, 0.2, {pixi:{y:'+=10', alpha:0}, ease:Power3.easeOut});
+			t.set(ctaText, {pixi:{y:'-=30'}, delay:0.2})
+			t.to(ctaText, 0.6, {pixi:{y:'+=20', alpha:1, scale:1.1}, ease:Elastic.easeOut, delay:0.21});
+			t.to(ctaText, 0.1, {pixi:{y:0}, delay:0.25});
+		}).on('mouseout', function(e){
+			t.to(ctaBg, 0.6, {pixi:{scale:1.0}, ease:Elastic.easeOut});
+			t.to(ctaText, 0.6, {pixi:{scale:1.0, y:0}, ease:Elastic.easeOut});
+		});
+
+		ctaHolder.on('pointerup', setUpGame);
+
+		tlIntro.play();
+
+		//setUpGame();
 	}
 
 	function setPosition() {
 
-
+		main.filters = [mainBlur];
 
 		// -----------
 		//  INTRO
 		// -----------
+
+		//log(overlay.width)
+
+		//overlay.position.set(stageW - overlay.width, 0);
+		overlay.width  = 961  / 2;
+		overlay.height = 1000 / 2;
+		overlay.position.set(stageW - overlay.width, 0);
+
+		// - CTA
+		ctaBg.anchor.set(0.5);
+		ctaText.anchor.set(0.5);
+		ctaHolder.interactive = true;
+		ctaHolder.buttonMode = true;
+		ctaHolder.addChild(ctaBg);
+		ctaHolder.addChild(ctaText);
+
+		ctaHolder.position.set( stageW / 3, stageH / 2 + 160);
+		ahLogo.position.set(stageW - ahLogo.width / 2, 160);
+		instructionText.position.set((overlay.x + overlay.width / 2) - instructionText.width / 2, stageH - instructionText.height - 60);
+
+		// - Airheads Logo
+		ahLogo.anchor.set(0.5);
+		ahLogo.animationSpeed = 0.3;
+		ahLogo.loop = false;
+
+		intro.addChild(overlay);
+		intro.addChild(instructionText);
+		intro.addChild(ahLogo);
+		intro.addChild(ctaHolder);
+		//intro.addChild(cabLogo);
 
 
 		// -----------
@@ -608,175 +680,175 @@ function init() {
 		// -----------
 
 
-			//bgHolder.pivot.set(stageW / 2 - bgHolder.width / 2, stageH / 2 - bgHolder.height / 2);
+		//bgHolder.pivot.set(stageW / 2 - bgHolder.width / 2, stageH / 2 - bgHolder.height / 2);
 
-			sky_bg.anchor.set(0.5);
-			sky_bg.scale.x = sky_bg.scale.y = 1.5;
-			bgHolder.addChild(sky_bg);
-			sky_bg.position.set(sky_bg.width / 2, sky_bg.height / 2)
+		sky_bg.anchor.set(0.5);
+		sky_bg.scale.x = sky_bg.scale.y = 1.5;
+		bgHolder.addChild(sky_bg);
+		sky_bg.position.set(sky_bg.width / 2, sky_bg.height / 2)
 
-			bgHolder.position.set(stageW / 2 - bgHolder.width / 2, stageH / 2 - bgHolder.height / 2);
-
-
-			head.pivot.set(142, 368);
-			head.position.set(0, 0);
-
-			torso.pivot.set(32, 12);
-			torso.position.set(0, 12);
-
-			upperRightArm.pivot.set(30, 60);
-			upperRightArm.position.set(-22, 70);
-
-			upperLeftArm.pivot.set(5, 5);
-			upperLeftArm.position.set(30, 14);
-
-			lowerRightArm.pivot.set(40, 5);
-			lowerRightArm.position.set(-44, 36);
-
-			lowerRightArm.rotation = (0.0);
-
-			lowerLeftArm.pivot.set(4, 2);
-			lowerLeftArm.position.set(50, 32);
-
-			pelvis.pivot.set(32, 1);
-			pelvis.position.set(6, 75);
-
-			upperRightLeg.pivot.set(14, 1);
-			upperRightLeg.position.set(0, -9);
-
-			upperLeftLeg.pivot.set(2, 6);
-			upperLeftLeg.position.set(2, 1);
-
-			lowerRightLeg.pivot.set(20, 5);
-			lowerRightLeg.position.set(1, 22);
-
-			lowerLeftLeg.pivot.set(14, 3);
-			lowerLeftLeg.position.set(32, 26);
-
-			leftArm.addChild(upperLeftArm);
-			leftArm.addChild(lowerLeftArm);
-
-			rightArm.addChild(upperRightArm);
-			rightArm.addChild(lowerRightArm);
-
-			leftLeg.addChild(upperLeftLeg);
-			leftLeg.addChild(lowerLeftLeg);
-
-			rightLeg.addChild(upperRightLeg);
-			rightLeg.addChild(lowerRightLeg);
-
-			//airBody.addChild(upperLeftArm);
-			//airBody.addChild(lowerLeftArm);
-
-			airBody.addChild(leftArm);
-
-			airBody.addChild(pelvis)
-
-			airBody.addChild(rightLeg);
-			airBody.addChild(leftLeg);
-
-			rightLeg.pivot.set(14, -10);
-			rightLeg.position.set(0, 77);
-
-			//leftLeg.pivot.set(2, 6);
-			leftLeg.pivot.set(0, 10);
-			leftLeg.position.set(8, 74);
-
-			leftLeg.rotation = 0.5;
-
-			//airBody.addChild(upperRightArm);
-			//airBody.addChild(lowerRightArm);
-			airBody.addChild(rightArm);
-			airBody.addChild(torso);
-
-			airHead.addChild(airBody);
-			airHead.addChild(head);
-			airHead.addChild(hitRect);
-
-			hitRect.position.set(-100, -150);
-
-			airHead.scale.set(0.75);
-			airHead.position.set(stageW / 2, stageH / 2);
-
-			airHead.interactive = true;
-			airHead.buttonMode = true;
-
-			candyHolder.addChild(airHead);
-
-			candy0.anchor.set(0.5);
-			candy1.anchor.set(0.5);
-			//candy2.anchor.set(0.5);
-			//candy3.anchor.set(0.5);
-			//candy4.anchor.set(0.5);
-			//candy5.anchor.set(0.5);
-			//candy6.anchor.set(0.5);
-
-			candy0.filters = [candyBlur0, candyBrightness0];
-			candy1.filters = [candyBlur1, candyBrightness1];
-			//candy2.filters = [candyBlur2];
-			//candy3.filters = [candyBlur3];
-			//candy4.filters = [candyBlur4];
-			//candy5.filters = [candyBlur5];
-			//candy6.filters = [candyBlur6];
+		bgHolder.position.set(stageW / 2 - bgHolder.width / 2, stageH / 2 - bgHolder.height / 2);
 
 
-			candyHolder.addChild(candy0);
-			candyHolder.addChild(candy1);
-			//candyHolder.addChild(candy2);
-			//candyHolder.addChild(candy3);
-			//candyHolder.addChild(candy4);
-			//candyHolder.addChild(candy5);
-			//candyHolder.addChild(candy6);
+		head.pivot.set(142, 368);
+		head.position.set(0, 0);
 
-			//candies = [candy0, candy1, candy2, candy3, candy4, candy5, candy6];
+		torso.pivot.set(32, 12);
+		torso.position.set(0, 12);
 
-			candy0.scale.x = candy0.scale.y = Utils.random(2, 3);
-			t.set(candy0, {pixi:{x:Utils.random(0, stageW), y:Utils.random(-2000, -200)}} );
+		upperRightArm.pivot.set(30, 60);
+		upperRightArm.position.set(-22, 70);
 
-			candy1.scale.x = candy1.scale.y = Utils.random(2, 3);
-			t.set(candy1, {pixi:{x:Utils.random(0, stageW), y:Utils.random(stageH + 50, stageH + 2000)}} );
+		upperLeftArm.pivot.set(5, 5);
+		upperLeftArm.position.set(30, 14);
 
-			/*
-			//candies = [candy0, candy1];
+		lowerRightArm.pivot.set(40, 5);
+		lowerRightArm.position.set(-44, 36);
 
-			for ( var i = 0; i < candies.length; i++ ) {
-				candies[i].scale.x = candies[i].scale.y = Utils.random(2, 3);
-				t.set(candies[i], {pixi:{x:Utils.random(0, stageW), y:Utils.random(-2000, -200)}} );
-				//log( candies[i].filters );
-				candyFilters.push(candies[i].filters);
-			}
-			*/
+		lowerRightArm.rotation = (0.0);
+
+		lowerLeftArm.pivot.set(4, 2);
+		lowerLeftArm.position.set(50, 32);
+
+		pelvis.pivot.set(32, 1);
+		pelvis.position.set(6, 75);
+
+		upperRightLeg.pivot.set(14, 1);
+		upperRightLeg.position.set(0, -9);
+
+		upperLeftLeg.pivot.set(2, 6);
+		upperLeftLeg.position.set(2, 1);
+
+		lowerRightLeg.pivot.set(20, 5);
+		lowerRightLeg.position.set(1, 22);
+
+		lowerLeftLeg.pivot.set(14, 3);
+		lowerLeftLeg.position.set(32, 26);
+
+		leftArm.addChild(upperLeftArm);
+		leftArm.addChild(lowerLeftArm);
+
+		rightArm.addChild(upperRightArm);
+		rightArm.addChild(lowerRightArm);
+
+		leftLeg.addChild(upperLeftLeg);
+		leftLeg.addChild(lowerLeftLeg);
+
+		rightLeg.addChild(upperRightLeg);
+		rightLeg.addChild(lowerRightLeg);
+
+		//airBody.addChild(upperLeftArm);
+		//airBody.addChild(lowerLeftArm);
+
+		airBody.addChild(leftArm);
+
+		airBody.addChild(pelvis)
+
+		airBody.addChild(rightLeg);
+		airBody.addChild(leftLeg);
+
+		rightLeg.pivot.set(14, -10);
+		rightLeg.position.set(0, 77);
+
+		//leftLeg.pivot.set(2, 6);
+		leftLeg.pivot.set(0, 10);
+		leftLeg.position.set(8, 74);
+
+		leftLeg.rotation = 0.5;
+
+		//airBody.addChild(upperRightArm);
+		//airBody.addChild(lowerRightArm);
+		airBody.addChild(rightArm);
+		airBody.addChild(torso);
+
+		airHead.addChild(airBody);
+		airHead.addChild(head);
+		airHead.addChild(hitRect);
+
+		hitRect.position.set(-100, -150);
+
+		airHead.scale.set(0.75);
+		airHead.position.set(stageW / 2, stageH / 2);
+
+		airHead.interactive = true;
+		airHead.buttonMode = true;
+
+		candyHolder.addChild(airHead);
+
+		candy0.anchor.set(0.5);
+		candy1.anchor.set(0.5);
+		//candy2.anchor.set(0.5);
+		//candy3.anchor.set(0.5);
+		//candy4.anchor.set(0.5);
+		//candy5.anchor.set(0.5);
+		//candy6.anchor.set(0.5);
+
+		candy0.filters = [candyBlur0, candyBrightness0];
+		candy1.filters = [candyBlur1, candyBrightness1];
+		//candy2.filters = [candyBlur2];
+		//candy3.filters = [candyBlur3];
+		//candy4.filters = [candyBlur4];
+		//candy5.filters = [candyBlur5];
+		//candy6.filters = [candyBlur6];
 
 
-			scoreText.position.set(76, stageH - scoreText.height - 26);
-			scoreIcon.anchor.set(0.5);
-			scoreIcon.scale.set(0.8);
-			scoreIcon.position.set(42, stageH - ((scoreIcon.height / 2) + 20));
+		candyHolder.addChild(candy0);
+		candyHolder.addChild(candy1);
+		//candyHolder.addChild(candy2);
+		//candyHolder.addChild(candy3);
+		//candyHolder.addChild(candy4);
+		//candyHolder.addChild(candy5);
+		//candyHolder.addChild(candy6);
 
-			timerText.position.set(stageW - timerText.width - 20, stageH - timerText.height - 26);
+		//candies = [candy0, candy1, candy2, candy3, candy4, candy5, candy6];
 
-			heart1.position.set(0, 0);
-			heart2.position.set(40, 0);
-			heart3.position.set(80, 0);
+		candy0.scale.x = candy0.scale.y = Utils.random(2, 3);
+		t.set(candy0, {pixi:{x:Utils.random(0, stageW), y:Utils.random(-2000, -200)}} );
 
-			heartHolder.addChild(heart1);
-			heartHolder.addChild(heart2);
-			heartHolder.addChild(heart3);
-			heartHolder.position.set(30, 20);
+		candy1.scale.x = candy1.scale.y = Utils.random(2, 3);
+		t.set(candy1, {pixi:{x:Utils.random(0, stageW), y:Utils.random(stageH + 50, stageH + 2000)}} );
 
-			interfaceHolder.addChild(heartHolder);
-			interfaceHolder.addChild(timerBg);
-			interfaceHolder.addChild(timerIcon);
-			interfaceHolder.addChild(timerText);
-			interfaceHolder.addChild(scoreIcon);
-			interfaceHolder.addChild(scoreText);
+		/*
+		//candies = [candy0, candy1];
+
+		for ( var i = 0; i < candies.length; i++ ) {
+			candies[i].scale.x = candies[i].scale.y = Utils.random(2, 3);
+			t.set(candies[i], {pixi:{x:Utils.random(0, stageW), y:Utils.random(-2000, -200)}} );
+			//log( candies[i].filters );
+			candyFilters.push(candies[i].filters);
+		}
+		*/
 
 
-			main.addChild(bgHolder);
-			//main.addChild(airHead);
+		scoreText.position.set(76, stageH - scoreText.height - 26);
+		scoreIcon.anchor.set(0.5);
+		scoreIcon.scale.set(0.8);
+		scoreIcon.position.set(42, stageH - ((scoreIcon.height / 2) + 20));
 
-			main.addChild(candyHolder);
-			main.addChild(interfaceHolder);
+		timerText.position.set(stageW - timerText.width - 20, stageH - timerText.height - 26);
+
+		heart1.position.set(0, 0);
+		heart2.position.set(40, 0);
+		heart3.position.set(80, 0);
+
+		heartHolder.addChild(heart1);
+		heartHolder.addChild(heart2);
+		heartHolder.addChild(heart3);
+		heartHolder.position.set(30, 20);
+
+		interfaceHolder.addChild(heartHolder);
+		interfaceHolder.addChild(timerBg);
+		interfaceHolder.addChild(timerIcon);
+		interfaceHolder.addChild(timerText);
+		interfaceHolder.addChild(scoreIcon);
+		interfaceHolder.addChild(scoreText);
+
+
+		main.addChild(bgHolder);
+		//main.addChild(airHead);
+
+		main.addChild(candyHolder);
+		main.addChild(interfaceHolder);
 
 
 		// -----------
@@ -791,131 +863,152 @@ function init() {
 	function setUp() {
 		log('setUp');
 
+		t.to(loadingText, 0.3, {pixi:{alpha:0, y:'+=10'}, ease:Power3.easeOut, delay:0.5});
+
+		mainBlur = new PIXI.filters.BlurFilter();
+		mainBlur.blur = 10;
+		mainBlur.quality = 4;
+
 		// -----------
 		//  INTRO
 		// -----------
+		logoTextures = [resources['logo00.png'].texture, resources['logo01.png'].texture, resources['logo02.png'].texture, resources['logo03.png'].texture, resources['logo04.png'].texture, resources['logo05.png'].texture, resources['logo06.png'].texture, resources['logo07.png'].texture, resources['logo08.png'].texture, resources['logo09.png'].texture, resources['logo10.png'].texture, resources['logo11.png'].texture, resources['logo12.png'].texture ];
+
+		intro = new PIXI.Container({width: stageW, height: stageH});
+		ctaHolder = new PIXI.Container();
+		ahLogo = new PIXI.extras.AnimatedSprite(logoTextures);
+		ctaBg = new PIXI.Sprite(resources['cta_bg.png'].texture);
+		ctaText = new PIXI.Text(' Play Now ');
+
+		overlay = new PIXI.Sprite(resources['overlayBg_@2X.png'].texture);
+
+		instructionText = new PIXI.Text(' Drag the Airhead.\nCatch some candy.\nIt’s that easy. ');
+
+		ctaText.style 		= Text.ctaTextStyle;
+		instructionText.style = Text.interfaceTextStyle;
+
 
 
 		// -----------
 		//  MAIN
 		// -----------
 
-			candyBlur0 = new PIXI.filters.BlurFilter();
-			candyBlur1 = new PIXI.filters.BlurFilter();
-			candyBlur2 = new PIXI.filters.BlurFilter();
-			candyBlur3 = new PIXI.filters.BlurFilter();
-			candyBlur4 = new PIXI.filters.BlurFilter();
-			candyBlur5 = new PIXI.filters.BlurFilter();
-			candyBlur6 = new PIXI.filters.BlurFilter();
-			candyBlur7 = new PIXI.filters.BlurFilter();
+		candyBlur0 = new PIXI.filters.BlurFilter();
+		candyBlur1 = new PIXI.filters.BlurFilter();
+		candyBlur2 = new PIXI.filters.BlurFilter();
+		candyBlur3 = new PIXI.filters.BlurFilter();
+		candyBlur4 = new PIXI.filters.BlurFilter();
+		candyBlur5 = new PIXI.filters.BlurFilter();
+		candyBlur6 = new PIXI.filters.BlurFilter();
+		candyBlur7 = new PIXI.filters.BlurFilter();
 
-			candyBrightness0 = new PIXI.filters.ColorMatrixFilter();
-			candyBrightness0.brightness(0.5);
+		candyBrightness0 = new PIXI.filters.ColorMatrixFilter();
+		candyBrightness0.brightness(0.5);
 
-			candyBrightness1 = new PIXI.filters.ColorMatrixFilter();
-			candyBrightness1.brightness(0.5);
+		candyBrightness1 = new PIXI.filters.ColorMatrixFilter();
+		candyBrightness1.brightness(0.5);
 
-			candyBlur0.blur = candyBlur1.blur = candyBlur2.blur = candyBlur3.blur = candyBlur4.blur = candyBlur5.blur = candyBlur6.blur = candyBlur7.blur = 10;
-
-
-			main = new PIXI.Container();
-			bgHolder = new PIXI.Container();
-			interfaceHolder = new PIXI.Container();
-
-			bgHolder.width = 1700;
-			bgHolder.height = 800;
-
-			sky_bg = new PIXI.Sprite(resources['sky_bg_test.jpg'].texture);
-
-			// - interface
-			// -- score
-			scoreText 	= new PIXI.Text('0');
-			scoreIcon 	= new PIXI.Sprite(resources['candy_00.png'].texture);
-			scoreText.style = Text.interfaceTextStyle;
-
-			// -- Timer
-			timerSectors 	= 30;
-			timerSectorLength = ((Math.PI / 180) * 360/ timerSectors) * 15;
-			beginAngle 	= 0 / timerSectors * Math.PI * 2;
-
-			timerText			= new PIXI.Text('00');
-			timerBg 			= new PIXI.Graphics();
-			timerIcon 			= new PIXI.Graphics();
-			timerText.style 	= Text.interfaceTextStyle;
-
-			timerBg.lineStyle(6, 0xFFFFFF, 1);
-			timerIcon.lineStyle(6, 0xFF3300, 1);
-
-			timerBg.arc(stageW - 80, stageH - 40, 10, (Math.PI / 180) * 0 , (Math.PI / 180) * 360, false);
-			timerIcon.arc(stageW - 80, stageH - 40, 10, (Math.PI / 180) * 0 , (Math.PI / 180) * 180, false);
-
-			// -- Hearts
-			heartHolder = new PIXI.Container();
-			heart1 		= new PIXI.Sprite(resources['heart.png'].texture);
-			heart2 		= new PIXI.Sprite(resources['heart.png'].texture);
-			heart3 		= new PIXI.Sprite(resources['heart.png'].texture);
-
-			// - AIRHEAD
-			airHead = new PIXI.Container();
-
-			headTextures = [resources['ah_head_00.png'].texture, resources['ah_head_01.png'].texture, resources['ah_head_01.png'].texture, resources['ah_head_02.png'].texture, resources['ah_head_02.png'].texture, resources['ah_head_02.png'].texture, resources['ah_head_02.png'].texture, resources['ah_head_02.png'].texture, resources['ah_head_02.png'].texture, resources['ah_head_02.png'].texture, resources['ah_head_01.png'].texture, resources['ah_head_01.png'].texture, resources['ah_head_01.png'].texture];
-
-			// -- Head
-			head = new PIXI.extras.AnimatedSprite(headTextures);
-			head.loop = false;
-			head.animationSpeed = 0.7;
-
-			hitRect = new PIXI.Graphics();
-			hitRect.beginFill(0xFF3300);
-			hitRect.drawRect(0, 0, 200, 100);
-			hitRect.endFill();
-			hitRect.alpha = 0.0;
-			hitRect.interactive = true;
-			hitRect.buttonMode = true;
-			hitRect.hitArea = new PIXI.Rectangle(0, 0, 200, 100);
-
-			// -- Body
-			airBody = new PIXI.Container();
-
-			leftLeg = new PIXI.Container();
-			rightLeg = new PIXI.Container();
-			leftArm = new PIXI.Container();
-			rightArm = new PIXI.Container();
-
-			torso = new PIXI.Sprite(resources['ah_torso.png'].texture);
-			pelvis = new PIXI.Sprite(resources['ah_pelvis.png'].texture);
-
-			lowerLeftLeg = new PIXI.Sprite(resources['ah_lowerLeftLeg.png'].texture);
-			lowerRightLeg = new PIXI.Sprite(resources['ah_lowerRightLeg.png'].texture);
-
-			upperLeftLeg = new PIXI.Sprite(resources['ah_upperLeftLeg.png'].texture);
-			upperRightLeg = new PIXI.Sprite(resources['ah_upperRightLeg.png'].texture);
-
-			lowerRightArm = new PIXI.Sprite(resources['ah_lowerRightArm.png'].texture);
-			lowerLeftArm = new PIXI.Sprite(resources['ah_lowerLeftArm.png'].texture);
-
-			upperRightArm = new PIXI.Sprite(resources['ah_upperRightArm.png'].texture);
-			upperLeftArm = new PIXI.Sprite(resources['ah_upperLeftArm.png'].texture);
-
-			// - Candy
-			candyHolder 	= new PIXI.Container();
-
-			candyTextures = [resources['candy_01.png'].texture, resources['candy_02.png'].texture, resources['candy_03.png'].texture, resources['candy_04.png'].texture, resources['candy_05.png'].texture, resources['candy_06.png'].texture];
+		candyBlur0.blur = candyBlur1.blur = candyBlur2.blur = candyBlur3.blur = candyBlur4.blur = candyBlur5.blur = candyBlur6.blur = candyBlur7.blur = 10;
 
 
-			candy0 = new PIXI.extras.AnimatedSprite(candyTextures);
-			candy1 = new PIXI.extras.AnimatedSprite(candyTextures);
-			candy0.gotoAndStop(Utils.random(0, 6));
-			candy1.gotoAndStop(Utils.random(0, 6));
+		main = new PIXI.Container();
+		bgHolder = new PIXI.Container();
+		interfaceHolder = new PIXI.Container();
+
+		bgHolder.width = 1700;
+		bgHolder.height = 800;
+
+		sky_bg = new PIXI.Sprite(resources['sky_bg_test.jpg'].texture);
+
+		// - interface
+		// -- score
+		scoreText 	= new PIXI.Text('0');
+		scoreIcon 	= new PIXI.Sprite(resources['candy_00.png'].texture);
+		scoreText.style = Text.interfaceTextStyle;
+
+		// -- Timer
+		timerSectors 	= 30;
+		timerSectorLength = ((Math.PI / 180) * 360/ timerSectors) * 15;
+		beginAngle 	= 0 / timerSectors * Math.PI * 2;
+
+		timerText			= new PIXI.Text('00');
+		timerBg 			= new PIXI.Graphics();
+		timerIcon 			= new PIXI.Graphics();
+		timerText.style 	= Text.interfaceTextStyle;
+
+		timerBg.lineStyle(6, 0xFFFFFF, 1);
+		timerIcon.lineStyle(6, 0xFF3300, 1);
+
+		timerBg.arc(stageW - 80, stageH - 40, 10, (Math.PI / 180) * 0 , (Math.PI / 180) * 360, false);
+		timerIcon.arc(stageW - 80, stageH - 40, 10, (Math.PI / 180) * 0 , (Math.PI / 180) * 180, false);
+
+		// -- Hearts
+		heartHolder = new PIXI.Container();
+		heart1 		= new PIXI.Sprite(resources['heart.png'].texture);
+		heart2 		= new PIXI.Sprite(resources['heart.png'].texture);
+		heart3 		= new PIXI.Sprite(resources['heart.png'].texture);
+
+		// - AIRHEAD
+		airHead = new PIXI.Container();
+
+		headTextures = [resources['ah_head_00.png'].texture, resources['ah_head_01.png'].texture, resources['ah_head_01.png'].texture, resources['ah_head_02.png'].texture, resources['ah_head_02.png'].texture, resources['ah_head_02.png'].texture, resources['ah_head_02.png'].texture, resources['ah_head_02.png'].texture, resources['ah_head_02.png'].texture, resources['ah_head_02.png'].texture, resources['ah_head_01.png'].texture, resources['ah_head_01.png'].texture, resources['ah_head_01.png'].texture];
+
+		// -- Head
+		head = new PIXI.extras.AnimatedSprite(headTextures);
+		head.loop = false;
+		head.animationSpeed = 0.7;
+
+		hitRect = new PIXI.Graphics();
+		hitRect.beginFill(0xFF3300);
+		hitRect.drawRect(0, 0, 200, 100);
+		hitRect.endFill();
+		hitRect.alpha = 0.0;
+		hitRect.interactive = true;
+		hitRect.buttonMode = true;
+		hitRect.hitArea = new PIXI.Rectangle(0, 0, 200, 100);
+
+		// -- Body
+		airBody = new PIXI.Container();
+
+		leftLeg = new PIXI.Container();
+		rightLeg = new PIXI.Container();
+		leftArm = new PIXI.Container();
+		rightArm = new PIXI.Container();
+
+		torso = new PIXI.Sprite(resources['ah_torso.png'].texture);
+		pelvis = new PIXI.Sprite(resources['ah_pelvis.png'].texture);
+
+		lowerLeftLeg = new PIXI.Sprite(resources['ah_lowerLeftLeg.png'].texture);
+		lowerRightLeg = new PIXI.Sprite(resources['ah_lowerRightLeg.png'].texture);
+
+		upperLeftLeg = new PIXI.Sprite(resources['ah_upperLeftLeg.png'].texture);
+		upperRightLeg = new PIXI.Sprite(resources['ah_upperRightLeg.png'].texture);
+
+		lowerRightArm = new PIXI.Sprite(resources['ah_lowerRightArm.png'].texture);
+		lowerLeftArm = new PIXI.Sprite(resources['ah_lowerLeftArm.png'].texture);
+
+		upperRightArm = new PIXI.Sprite(resources['ah_upperRightArm.png'].texture);
+		upperLeftArm = new PIXI.Sprite(resources['ah_upperLeftArm.png'].texture);
+
+		// - Candy
+		candyHolder 	= new PIXI.Container();
+
+		candyTextures = [resources['candy_01.png'].texture, resources['candy_02.png'].texture, resources['candy_03.png'].texture, resources['candy_04.png'].texture, resources['candy_05.png'].texture, resources['candy_06.png'].texture];
 
 
-			//candy0 			= new PIXI.Sprite(resources['candy_01.png'].texture);
-			//candy1 			= new PIXI.Sprite(resources['candy_06.png'].texture);
-			candy2 			= new PIXI.Sprite(resources['candy_02.png'].texture);
-			candy3 			= new PIXI.Sprite(resources['candy_03.png'].texture);
-			candy4 			= new PIXI.Sprite(resources['candy_04.png'].texture);
-			candy5 			= new PIXI.Sprite(resources['candy_05.png'].texture);
-			candy6 			= new PIXI.Sprite(resources['candy_06.png'].texture);
+		candy0 = new PIXI.extras.AnimatedSprite(candyTextures);
+		candy1 = new PIXI.extras.AnimatedSprite(candyTextures);
+		candy0.gotoAndStop(Utils.random(0, 6));
+		candy1.gotoAndStop(Utils.random(0, 6));
+
+
+		//candy0 			= new PIXI.Sprite(resources['candy_01.png'].texture);
+		//candy1 			= new PIXI.Sprite(resources['candy_06.png'].texture);
+		candy2 			= new PIXI.Sprite(resources['candy_02.png'].texture);
+		candy3 			= new PIXI.Sprite(resources['candy_03.png'].texture);
+		candy4 			= new PIXI.Sprite(resources['candy_04.png'].texture);
+		candy5 			= new PIXI.Sprite(resources['candy_05.png'].texture);
+		candy6 			= new PIXI.Sprite(resources['candy_06.png'].texture);
 
 
 		// -----------
@@ -957,6 +1050,21 @@ function init() {
 		'ah_upperRightArm.png',
 		'ah_upperRightLeg.png',
 
+		'cta_bg.png',
+		'logo00.png',
+		'logo01.png',
+		'logo02.png',
+		'logo03.png',
+		'logo04.png',
+		'logo05.png',
+		'logo06.png',
+		'logo07.png',
+		'logo08.png',
+		'logo09.png',
+		'logo10.png',
+		'logo11.png',
+		'logo12.png',
+		'overlayBg_@2X.png',
 
 
 
@@ -969,6 +1077,19 @@ function init() {
 		handleCandy(delta);
 		handleTimer(delta);
 	});
+
+	$(window).blur(function(){
+		//your code here
+		if (playing === true) {
+			ticker.stop();
+		}
+	});
+	$(window).focus(function(){
+		//your code
+		if (playing === true) {
+			setTimeout( function() { ticker.start(); }, 500);
+		}
+	})
 
 
 
