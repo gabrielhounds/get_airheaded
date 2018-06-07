@@ -330,9 +330,9 @@ function init() {
 			bottomHits 			= 0;
 			clickCount			= 0;
 
-			for ( var i = 0; i < candies.length; i++ ) {
-				t.set(candies[i], {pixi:{x:Utils.random(stageW, stageW * 2), y:Utils.random(50, stageH - 100)}} );
-			}
+			resetCandyPos0();
+			resetCandyPos1();
+
 
 			t.set([heart1, heart2, heart3], {pixi:{alpha:1}});
 			mainBlur.blur = 0.0;
@@ -447,6 +447,21 @@ function init() {
 
 	var cbcm0 = 0.5;
 
+	function resetCandyPos0() {
+		t.set(candy0, {pixi:{x:Utils.random(-200, stageW + 200), y:Utils.random(-100, -4000) }} );
+		candy0.scale.x = candy0.scale.y = Utils.random(2, 4);
+		candyBlur0.blur = 10;
+		candy0.gotoAndStop(Utils.random(0, 6));
+	}
+
+	function resetCandyPos1() {
+		t.set(candy1, {pixi:{x:Utils.random(-200, stageW + 200), y:Utils.random(stageH + 100, stageH + 3500) }} );
+		candy1.scale.x = candy1.scale.y = Utils.random(2, 4);
+		candyBlur1.blur = 10;
+		candy1.gotoAndStop(Utils.random(0, 6));
+	}
+
+
 	function handleCandy(delta) {
 
 		//log(candy0.scale.x);
@@ -470,11 +485,12 @@ function init() {
 		if (candy0.scale.x < 0.50 && candy0.scale.x > 0.45 ) {
 			if (Utils.hitTest(candy0, hitRect)) {
 				log('CANDY COLLISION');
-				t.set(candy0, {pixi:{x:Utils.random(-400, stageW + 400), y:Utils.random(-4000, -200) }} );
-				candy0.scale.x = candy0.scale.y = Utils.random(2, 4);
-				candyBlur0.blur = 10;
+				//t.set(candy0, {pixi:{x:Utils.random(-400, stageW + 400), y:Utils.random(-4000, -200) }} );
+				//candy0.scale.x = candy0.scale.y = Utils.random(2, 4);
+				//candyBlur0.blur = 10;
 				//candyHolder.swapChildren(candy0, airHead);
-				candy0.gotoAndStop(Utils.random(0, 6));
+				//candy0.gotoAndStop(Utils.random(0, 6));
+				resetCandyPos0();
 				missRate = 0;
 				handleScore();
 			}
@@ -483,11 +499,12 @@ function init() {
 		if (candy1.scale.x < 0.50 && candy1.scale.x > 0.45 ) {
 			if (Utils.hitTest(candy1, hitRect)) {
 				log('CANDY COLLISION');
-				t.set(candy1, {pixi:{x:Utils.random(-400, stageW + 400), y:Utils.random(600, 4000)     }} );
-				candy1.scale.x = candy1.scale.y = Utils.random(2, 4);
-				candyBlur1.blur = 10;
+				//t.set(candy1, {pixi:{x:Utils.random(-400, stageW + 400), y:Utils.random(600, 4000)     }} );
+				//candy1.scale.x = candy1.scale.y = Utils.random(2, 4);
+				//candyBlur1.blur = 10;
 				//candyHolder.swapChildren(candy0, airHead);
-				candy1.gotoAndStop(Utils.random(0, 6));
+				//candy1.gotoAndStop(Utils.random(0, 6));
+				resetCandyPos1();
 				missRate = 0;
 				handleScore();
 			}
@@ -504,10 +521,11 @@ function init() {
 			}
 		} else {
 			// RESET CANDY 0
-			t.set(candy0, {pixi:{x:Utils.random(-400, stageW + 400), y:Utils.random(-4000, -200)}} );
-			candy0.scale.x = candy0.scale.y = Utils.random(2, 4);
-			candyBlur0.blur = 10;
-			candy0.gotoAndStop(Utils.random(0, 6));
+			//t.set(candy0, {pixi:{x:Utils.random(-400, stageW + 400), y:Utils.random(-4000, -200)}} );
+			//candy0.scale.x = candy0.scale.y = Utils.random(2, 4);
+			//candyBlur0.blur = 10;
+			//candy0.gotoAndStop(Utils.random(0, 6));
+			resetCandyPos0();
 			candyHolder.swapChildren(candy0, airHead);
 			//head.gotoAndStop(0);
 			missRate += 1;
@@ -526,10 +544,11 @@ function init() {
 			}
 		} else {
 			// RESET CANDY 1
-			t.set(candy1, {pixi:{x:Utils.random(-200, stageW + 200), y:Utils.random(500, 2000)}} );
-			candy1.scale.x = candy1.scale.y = Utils.random(2, 4);
-			candyBlur1.blur = 10;
-			candy1.gotoAndStop(Utils.random(0, 6));
+			//t.set(candy1, {pixi:{x:Utils.random(-200, stageW + 200), y:Utils.random(500, 2000)}} );
+			//candy1.scale.x = candy1.scale.y = Utils.random(2, 4);
+			//candyBlur1.blur = 10;
+			//candy1.gotoAndStop(Utils.random(0, 6));
+			resetCandyPos1();
 			candyHolder.swapChildren(candy1, airHead);
 			//head.gotoAndStop(0);
 			missRate += 1;
