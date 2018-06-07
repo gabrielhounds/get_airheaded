@@ -68,7 +68,7 @@ function init() {
 	var heart1, heart2, heart3;
 
 	// INTRO
-	var ctaBg, ctaText, ctaHolder, overlay, ahLogo, logoTextures, instructionText, cabLogo, cabCatch, cabA, cabBite, cabBg, cabCandy1, cabCandy2, cabCandy3, cabCandy4, intro;
+	var ctaBg, ctaText, ctaHolder, overlay, ahLogo, logoTextures, instructionText, gaLogo, gaGet, gaAirheaded, gaBg, gaCandy1, gaCandy2, gaCandy3, gaCandy4, intro;
 
 	//MAIN
 	var main, bgHolder, candyHolder, fgHolder, airheadHolder, hitRect;
@@ -85,7 +85,7 @@ function init() {
 
 	//ENDFRAME
 	var endFrame, overlayEnd, endCtaBg1, endCtaBg2, endCtaHolder1, endCtaHolder2, endCtaText1, endCtaText2, ahLogoEnd, yourScoreText, endSubhead;
-	var cabLogoEnd, cabCatchEnd, cabAEnd, cabBiteEnd, cabBgEnd, cabCandy1End, cabCandy2End, cabCandy3End, cabCandy4End;
+	var gaLogoEnd, gaGetEnd, gaAirheadedEnd, gaBgEnd, gaCandy1End, gaCandy2End, gaCandy3End, gaCandy4End;
 
 	//Sounds
 	var bgSound, flapSound, buttonSound, eatSound, loseSound, winSound, overSound;
@@ -380,14 +380,14 @@ function init() {
 		tlGameOver.add('begin')
 		.to(main, 				0.3, {pixi:{blurX:10.0, blurY:10.0}}, '+=1.0')
 		.from(overlayEnd, 		0.4, {pixi:{y:'-=400', alpha:0}, ease:Power3.easeOut})
-		//.from(cabCatchEnd, 		0.8, {pixi:{scale:0.3, alpha:0}, ease:Elastic.easeOut})
+		//.from(gaGetEnd, 		0.8, {pixi:{scale:0.3, alpha:0}, ease:Elastic.easeOut})
 		//.from(cabAEnd, 			0.8, {pixi:{scale:0.3, alpha:0}, ease:Elastic.easeOut}, '-=0.7')
-		//.from(cabBiteEnd, 		0.8, {pixi:{scale:0.3, alpha:0}, ease:Elastic.easeOut}, '-=0.7')
-		//.from(cabBgEnd, 		0.2, {pixi:{scale:0,   alpha:0}, ease:Power3.easeOut}, '-=0.7')
-		//.from(cabCandy4End, 	0.6, {pixi:{scale:0.5, alpha:0}, ease:Elastic.easeOut}, '-=0.6')
-		//.from(cabCandy1End, 	0.6, {pixi:{scale:1.2, alpha:0}, ease:Elastic.easeOut}, '-=0.55')
-		//.from(cabCandy2End, 	0.6, {pixi:{scale:1.2, alpha:0}, ease:Elastic.easeOut}, '-=0.55')
-		//.from(cabCandy3End, 	0.6, {pixi:{scale:1.2, alpha:0}, ease:Elastic.easeOut}, '-=0.55')
+		//.from(gaAirheadedEnd, 		0.8, {pixi:{scale:0.3, alpha:0}, ease:Elastic.easeOut}, '-=0.7')
+		//.from(gaBgEnd, 		0.2, {pixi:{scale:0,   alpha:0}, ease:Power3.easeOut}, '-=0.7')
+		//.from(gaCandy4End, 	0.6, {pixi:{scale:0.5, alpha:0}, ease:Elastic.easeOut}, '-=0.6')
+		//.from(gaCandy1End, 	0.6, {pixi:{scale:1.2, alpha:0}, ease:Elastic.easeOut}, '-=0.55')
+		//.from(gaCandy2End, 	0.6, {pixi:{scale:1.2, alpha:0}, ease:Elastic.easeOut}, '-=0.55')
+		//.from(gaCandy3End, 	0.6, {pixi:{scale:1.2, alpha:0}, ease:Elastic.easeOut}, '-=0.55')
 		.from(yourScoreText, 	0.6, {pixi:{y:'+=40',  alpha:0}, ease:Elastic.easeOut}, '-=0.55')
 		.from(endSubhead, 		0.6, {pixi:{y:'+=40',  alpha:0}, ease:Elastic.easeOut}, '-=0.55')
 		.from(ahLogoEnd, 		0.6, {pixi:{scale:0.7, alpha:0}, ease:Power3.easeOut}, '+=0.1')
@@ -463,7 +463,6 @@ function init() {
 		candy1.gotoAndStop(Utils.random(0, 6));
 	}
 
-
 	function handleCandy(delta) {
 
 		//log(candy0.scale.x);
@@ -480,7 +479,7 @@ function init() {
 		candyBlur0.blur = candy0.scale.x * 3;
 		candyBlur1.blur = candy1.scale.x * 3;
 
-		catBlur.blur = cat.scale.x * 3;
+		catBlur.blur = cat.scale.x * 1;
 
 		cbcm0 = Math.cos(candy0.scale.x / 2.0)
 		candyBrightness0.brightness(cbcm0);
@@ -737,8 +736,8 @@ function init() {
 
 		tlOutro.add('begin')
 		.to(main, 				0.6, {pixi:{blurX:0.0, blurY:0.0}, ease:Power2.easeOut})
-		//.to(cabLogo, 			0.4, {pixi:{y:'-=100', alpha:0.0}, ease:Power3.easeOut}, '-=0.55')
-		//.to(cabLogo.children, 	0.4, {pixi:{scale:0.5, alpha:0.0}, ease:Power2.easeOut}, '-=0.55')
+		.to(gaLogo, 			0.4, {pixi:{y:'-=100', alpha:0.0}, ease:Power3.easeOut}, '-=0.55')
+		.to(gaLogo.children, 	0.4, {pixi:{scale:0.5, alpha:0.0}, ease:Power2.easeOut}, '-=0.55')
 		.to(ctaHolder, 			0.4, {pixi:{y:'+=100', alpha:0.0}, ease:Power3.easeOut}, '-=0.40')
 		.to(instructionText, 	0.4, {pixi:{x:'+=300', alpha:0.0}, ease:Power3.easeOut}, '-=0.40')
 		.to(overlay, 			0.4, {pixi:{x:'+=300', alpha:0.0}, ease:Power3.easeOut}, '-=0.40')
@@ -763,14 +762,13 @@ function init() {
 
 		tlIntro.add('begin')
 		.from(main, 		0.5, {pixi:{alpha:0}}, '+=1.0')
-		//.from(cabCatch, 	0.8, {pixi:{scale:0.3, alpha:0}, ease:Elastic.easeOut})
-		//.from(cabCandy4, 	0.6, {pixi:{scale:0.5, alpha:0}, ease:Elastic.easeOut}, '-=0.7')
-		//.from(cabA, 		0.8, {pixi:{scale:0.3, alpha:0}, ease:Elastic.easeOut}, '-=0.7')
-		//.from(cabCandy3, 	0.6, {pixi:{scale:1.2, alpha:0}, ease:Elastic.easeOut}, '-=0.75')
-		//.from(cabBite, 		0.8, {pixi:{scale:0.3, alpha:0}, ease:Elastic.easeOut}, '-=0.7')
-		//.from(cabCandy2, 	0.6, {pixi:{scale:1.2, alpha:0}, ease:Elastic.easeOut}, '-=0.75')
-		//.from(cabBg, 		0.2, {pixi:{scale:0, alpha:0}, ease:Power3.easeOut}, '-=0.7')
-		//.from(cabCandy1, 	0.6, {pixi:{scale:1.2, alpha:0}, ease:Elastic.easeOut}, '-=0.75')
+		.from(gaGet, 	0.8, {pixi:{scale:0.3, alpha:0}, ease:Elastic.easeOut})
+		.from(gaCandy4, 	0.6, {pixi:{scale:0.5, alpha:0}, ease:Elastic.easeOut}, '-=0.7')
+		.from(gaCandy3, 	0.6, {pixi:{scale:1.2, alpha:0}, ease:Elastic.easeOut}, '-=0.75')
+		.from(gaAirheaded, 		0.8, {pixi:{scale:0.3, alpha:0}, ease:Elastic.easeOut}, '-=0.7')
+		.from(gaCandy2, 	0.6, {pixi:{scale:1.2, alpha:0}, ease:Elastic.easeOut}, '-=0.75')
+		.from(gaBg, 		0.2, {pixi:{scale:0, alpha:0}, ease:Power3.easeOut}, '-=0.7')
+		.from(gaCandy1, 	0.6, {pixi:{scale:1.2, alpha:0}, ease:Elastic.easeOut}, '-=0.75')
 		.from(overlay, 		0.7, {pixi:{x:'+=40', alpha:0}, ease:Elastic.easeOut}, '-=0.0')
 		.from(instructionText, 0.4, {pixi:{y:'+=40', alpha:0},ease:Elastic.easeOut}, '-=0.6')
 		.from(ahLogo, 		0.8, {pixi:{scale:0.7, alpha:0}, ease:Power3.easeOut}, '-=0.2')
@@ -809,7 +807,37 @@ function init() {
 		//  INTRO
 		// -----------
 
-		//log(overlay.width)
+
+
+		gaGet.anchor.set(0.5)
+		gaAirheaded.anchor.set(0.5)
+		gaBg.anchor.set(0.5)
+		gaCandy1.anchor.set(0.5)
+		gaCandy2.anchor.set(0.5)
+		gaCandy3.anchor.set(0.5)
+		gaCandy4.anchor.set(0.5)
+
+		gaGet.position.set(gaGet.width / 2, gaGet.height / 2);
+
+		gaAirheaded.position.set(gaAirheaded.width / 2, gaAirheaded.height / 2);
+		gaBg.position.set(gaBg.width / 2, gaBg.height / 2);
+
+		gaCandy1.position.set(gaBg.width / 2, gaBg.height / 2);
+		gaCandy2.position.set(gaBg.width / 2, gaBg.height / 2);
+		gaCandy3.position.set(gaBg.width / 2, gaBg.height / 2);
+		gaCandy4.position.set(gaBg.width / 2, gaBg.height / 2);
+
+		gaLogo.addChild(gaCandy4);
+		gaLogo.addChild(gaBg);
+		gaLogo.addChild(gaGet);
+		gaLogo.addChild(gaAirheaded);
+		gaLogo.addChild(gaCandy1);
+		gaLogo.addChild(gaCandy2);
+		gaLogo.addChild(gaCandy3);
+
+		//gaLogo.pivot.set(gaLogo.width / 2, gaLogo.height / 2);
+		gaLogo.scale.x = gaLogo.scale.y = 0.75;
+		gaLogo.position.set(stageW / 3 - gaLogo.width / 2, 50);
 
 		//overlay.position.set(stageW - overlay.width, 0);
 		overlay.width  = 961  / 2;
@@ -837,7 +865,7 @@ function init() {
 		intro.addChild(instructionText);
 		intro.addChild(ahLogo);
 		intro.addChild(ctaHolder);
-		//intro.addChild(cabLogo);
+		intro.addChild(gaLogo);
 
 
 		// -----------
@@ -1045,8 +1073,8 @@ function init() {
 		ahLogoEnd.animationSpeed = 0.3;
 		ahLogoEnd.loop = false;
 
-		//cabLogoEnd.scale.set(0.42);
-		//cabLogoEnd.position.set(stageW / 3 - cabLogoEnd.width / 2 - 10, 26);
+		//gaLogoEnd.scale.set(0.42);
+		//gaLogoEnd.position.set(stageW / 3 - gaLogoEnd.width / 2 - 10, 26);
 		yourScoreText.position.set(stageW / 3 - yourScoreText.width / 2, 168);
 		endSubhead.position.set(stageW / 3 - endSubhead.width / 2, 284);
 		//endCtaHolder1.position.set(stageW / 3 , stageH / 2 + 180);
@@ -1056,7 +1084,7 @@ function init() {
 		ahLogoEnd.position.set(stageW - ahLogo.width / 2, 220);
 
 		endFrame.addChild(overlayEnd);
-		endFrame.addChild(cabLogoEnd);
+		endFrame.addChild(gaLogoEnd);
 		endFrame.addChild(endSubhead);
 		endFrame.addChild(endCtaHolder1);
 		endFrame.addChild(endCtaHolder2);
@@ -1094,6 +1122,15 @@ function init() {
 
 		ctaText.style 		= Text.ctaTextStyle;
 		instructionText.style = Text.interfaceTextStyle;
+
+		gaLogo = new PIXI.Container();
+		gaGet 		= new PIXI.Sprite(resources['ga_get.png'].texture);
+		gaAirheaded = new PIXI.Sprite(resources['ga_airheaded.png'].texture);
+		gaBg 		= new PIXI.Sprite(resources['ga_bg.png'].texture);
+		gaCandy1 	= new PIXI.Sprite(resources['ga_candy1.png'].texture);
+		gaCandy2 	= new PIXI.Sprite(resources['ga_candy2.png'].texture);
+		gaCandy3	= new PIXI.Sprite(resources['ga_candy3.png'].texture);
+		gaCandy4 	= new PIXI.Sprite(resources['ga_candy4.png'].texture);
 
 
 
@@ -1232,18 +1269,18 @@ function init() {
 		endFrame 		= new PIXI.Container();
 		endCtaHolder1	= new PIXI.Container();
 		endCtaHolder2	= new PIXI.Container();
-		cabLogoEnd 		= new PIXI.Container();
+		gaLogoEnd 		= new PIXI.Container();
 
 		yourScoreText 	= new PIXI.Text('Your score: 0   ');
 		endSubhead 	= new PIXI.Text(' Great job! ' );
-		//cabCatchEnd  	= new PIXI.Sprite(resources['cab_catch.png'].texture);
+		//gaGetEnd  	= new PIXI.Sprite(resources['cab_catch.png'].texture);
 		//cabAEnd 	 	= new PIXI.Sprite(resources['cab_a.png'].texture);
-		//cabBiteEnd   	= new PIXI.Sprite(resources['cab_bite.png'].texture);
-		//cabBgEnd 	 	= new PIXI.Sprite(resources['cab_bg.png'].texture);
-		//cabCandy1End 	= new PIXI.Sprite(resources['cab_candy1.png'].texture);
-		//cabCandy2End 	= new PIXI.Sprite(resources['cab_candy2.png'].texture);
-		//cabCandy3End	= new PIXI.Sprite(resources['cab_candy3.png'].texture);
-		//cabCandy4End 	= new PIXI.Sprite(resources['cab_candy4.png'].texture);
+		//gaAirheadedEnd   	= new PIXI.Sprite(resources['cab_bite.png'].texture);
+		//gaBgEnd 	 	= new PIXI.Sprite(resources['cab_bg.png'].texture);
+		//gaCandy1End 	= new PIXI.Sprite(resources['cab_candy1.png'].texture);
+		//gaCandy2End 	= new PIXI.Sprite(resources['cab_candy2.png'].texture);
+		//gaCandy3End	= new PIXI.Sprite(resources['cab_candy3.png'].texture);
+		//gaCandy4End 	= new PIXI.Sprite(resources['cab_candy4.png'].texture);
 		endCtaBg1 		= new PIXI.Sprite(resources['cta_bg.png'].texture);
 		endCtaBg2 		= new PIXI.Sprite(resources['cta_bg.png'].texture);
 		endCtaText1 	= new PIXI.Text(' Play Again? ');
@@ -1312,6 +1349,15 @@ function init() {
 		'logo11.png',
 		'logo12.png',
 		'overlayBg_@2X.png',
+
+		'ga_airheaded.png',
+		'ga_get.png',
+		'ga_bg.png',
+		'ga_candy1.png',
+		'ga_candy2.png',
+		'ga_candy3.png',
+		'ga_candy4.png',
+
 
 		'endOverlay.png'
 
