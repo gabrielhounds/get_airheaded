@@ -309,6 +309,124 @@ function init() {
 
 	}
 
+	function setUpReplay() {
+		//log('SET REPLAY');
+
+		buttonSound.play();
+		endCtaHolder1.off('pointerup');
+
+		//airBody.alpha = (0.0);
+        //head.alpha = (0.0);
+
+		//airHead.y = stageH - 140;
+
+		if (playing === false) {
+			score = 0;
+			scoreText.setText(score);
+			lives = 3;
+			ahLogoEnd.gotoAndStop(0);
+			gameTime 			= 30;
+			elapsedTime 		= 0;
+			bottomHits 			= 0;
+			clickCount			= 0;
+
+			for ( var i = 0; i < candies.length; i++ ) {
+				t.set(candies[i], {pixi:{x:Utils.random(stageW, stageW * 2), y:Utils.random(50, stageH - 100)}} );
+			}
+
+			t.set([heart1, heart2, heart3], {pixi:{alpha:1}});
+			mainBlur.blur = 0.0;
+			endFrame.position.set(0, stageH);
+			setTimeout( function() { bgSound.play(); }, 500);
+			t.to(bgSound, 0.5, {voluem:0.5});
+			playing = true;
+			ticker.start();
+		}
+	}
+
+	function handleGameOver( won ) {
+
+		playing = false;
+
+		if (won === true ) {
+			//log('you win');
+			t.to(bgSound, 0.5, {voluem:0, onComplete:function() {
+				setTimeout( function() { winSound.play(); }, 300);
+				bgSound.stop();
+			} });
+			endSubhead.setText(' Great job! ' );
+		} else {
+			//log('You Lost');
+			t.to(bgSound, 0.5, {voluem:0, onComplete:function() {
+				setTimeout( function() { overSound.play(); }, 300);
+				bgSound.stop();
+			} });
+			endSubhead.setText(' Nice Try! ' );
+		}
+		yourScoreText.setText(' Your score: ' + score + ' ');
+
+		if (screenSize === 'desktop') {
+			yourScoreText.position.set(stageW / 3 - yourScoreText.width / 2, 168);
+		} else if ( screenSize === 'tablet' ) {
+			yourScoreText.position.set(stageW / 3 - yourScoreText.width / 2, stageH / 2 - yourScoreText.height );
+		} else if ( screenSize === 'mobile') {
+			yourScoreText.position.set(stageW / 2 - yourScoreText.width / 2, stageH / 2 - yourScoreText.height * 2 );
+		}
+
+
+		//yourScoreText.position.set(stageW / 3 - yourScoreText.width / 2, 168);
+
+		tlGameOver.add('begin')
+		.to(main, 				0.3, {pixi:{blurX:10.0, blurY:10.0}}, '+=1.0')
+		.from(overlayEnd, 		0.4, {pixi:{y:'-=400', alpha:0}, ease:Power3.easeOut})
+		//.from(cabCatchEnd, 		0.8, {pixi:{scale:0.3, alpha:0}, ease:Elastic.easeOut})
+		//.from(cabAEnd, 			0.8, {pixi:{scale:0.3, alpha:0}, ease:Elastic.easeOut}, '-=0.7')
+		//.from(cabBiteEnd, 		0.8, {pixi:{scale:0.3, alpha:0}, ease:Elastic.easeOut}, '-=0.7')
+		//.from(cabBgEnd, 		0.2, {pixi:{scale:0,   alpha:0}, ease:Power3.easeOut}, '-=0.7')
+		//.from(cabCandy4End, 	0.6, {pixi:{scale:0.5, alpha:0}, ease:Elastic.easeOut}, '-=0.6')
+		//.from(cabCandy1End, 	0.6, {pixi:{scale:1.2, alpha:0}, ease:Elastic.easeOut}, '-=0.55')
+		//.from(cabCandy2End, 	0.6, {pixi:{scale:1.2, alpha:0}, ease:Elastic.easeOut}, '-=0.55')
+		//.from(cabCandy3End, 	0.6, {pixi:{scale:1.2, alpha:0}, ease:Elastic.easeOut}, '-=0.55')
+		.from(yourScoreText, 	0.6, {pixi:{y:'+=40',  alpha:0}, ease:Elastic.easeOut}, '-=0.55')
+		.from(endSubhead, 		0.6, {pixi:{y:'+=40',  alpha:0}, ease:Elastic.easeOut}, '-=0.55')
+		.from(ahLogoEnd, 		0.6, {pixi:{scale:0.7, alpha:0}, ease:Power3.easeOut}, '+=0.1')
+		.addCallback(function() { ahLogoEnd.play(); }, '-=0.65')
+		.from(endCtaHolder1, 	0.6, {pixi:{y:'+=40',  alpha:0}, ease:Elastic.easeOut}, '-=0.55')
+		.from(endCtaHolder2, 	0.6, {pixi:{y:'+=40',  alpha:0}, ease:Elastic.easeOut}, '-=0.55')
+		.addCallback(function() { setUpEndCta(); })
+		.add('end');
+
+		//, onComplete:setUpEndCta
+
+		function setUpEndCta() {
+			//log('end cta');
+
+			endCtaHolder1.on('mouseover', function(e){
+				t.to(endCtaBg1, 0.6, {pixi:{scale:1.2}, ease:Elastic.easeOut});
+				t.to(endCtaText1, 0.2, {pixi:{y:'+=10', alpha:0}, ease:Power3.easeOut});
+				t.set(endCtaText1, {pixi:{y:'-=30'}, delay:0.2})
+				t.to(endCtaText1, 0.6, {pixi:{y:'+=20', alpha:1, scale:1.1}, ease:Elastic.easeOut, delay:0.20});
+			}).on('mouseout', function(e){
+				t.to(endCtaBg1, 0.6, {pixi:{scale:1.0}, ease:Elastic.easeOut});
+				t.to(endCtaText1, 0.6, {pixi:{scale:1.0}, ease:Elastic.easeOut});
+			}).on('pointerup', setUpReplay);
+
+			endCtaHolder2.on('mouseover', function(e){
+				t.to(endCtaBg2, 0.6, {pixi:{scale:1.2}, ease:Elastic.easeOut});
+				t.to(endCtaText2, 0.2, {pixi:{y:'+=10', alpha:0}, ease:Power3.easeOut});
+				t.set(endCtaText2, {pixi:{y:'-=30'}, delay:0.2})
+				t.to(endCtaText2, 0.6, {pixi:{y:'+=20', alpha:1, scale:1.1}, ease:Elastic.easeOut, delay:0.20});
+			}).on('mouseout', function(e){
+				t.to(endCtaBg2, 0.6, {pixi:{scale:1.0}, ease:Elastic.easeOut});
+				t.to(endCtaText2, 0.6, {pixi:{scale:1.0}, ease:Elastic.easeOut});
+			});
+
+		}
+
+		endFrame.position.set(0, 0);
+		tlGameOver.play();
+	}
+
 
 
 	function handleScore() {
@@ -435,9 +553,6 @@ function init() {
 
 	}
 
-
-
-
 	var bx, by;
 
 	function handleBg() {
@@ -475,8 +590,8 @@ function init() {
 		interfaceHolder.addChild(timerIcon);
 
 		if (Math.ceil(gameTime)  <= 0 ) {
-			//ticker.stop();
-			//handleGameOver(true);
+			ticker.stop();
+			handleGameOver(true);
 		}
 	}
 
@@ -617,6 +732,8 @@ function init() {
 
 		app.stage.addChild(main);
 		app.stage.addChild(intro);
+		app.stage.addChild(endFrame);
+		endFrame.position.set(0, stageH);
 
 		ctaHolder.on('mouseover', function(e){
 			t.to(ctaBg, 0.6, {pixi:{scale:1.2}, ease:Elastic.easeOut});
@@ -855,6 +972,43 @@ function init() {
 		//  END FRAME
 		// -----------
 
+		endCtaBg1.anchor.set(0.5);
+		endCtaBg2.anchor.set(0.5);
+		endCtaText1.anchor.set(0.5);
+		endCtaText2.anchor.set(0.5);
+
+		endCtaHolder1.addChild(endCtaBg1);
+		endCtaHolder1.addChild(endCtaText1);
+		endCtaHolder2.addChild(endCtaBg2);
+		endCtaHolder2.addChild(endCtaText2);
+
+		endCtaHolder1.interactive = true;
+		endCtaHolder1.buttonMode = true;
+		endCtaHolder2.interactive = true;
+		endCtaHolder2.buttonMode = true;
+
+		ahLogoEnd.anchor.set(0.5);
+		ahLogoEnd.animationSpeed = 0.3;
+		ahLogoEnd.loop = false;
+
+		//cabLogoEnd.scale.set(0.42);
+		//cabLogoEnd.position.set(stageW / 3 - cabLogoEnd.width / 2 - 10, 26);
+		yourScoreText.position.set(stageW / 3 - yourScoreText.width / 2, 168);
+		endSubhead.position.set(stageW / 3 - endSubhead.width / 2, 284);
+		//endCtaHolder1.position.set(stageW / 3 , stageH / 2 + 180);
+		//endCtaHolder2.position.set( (stageW / 2 +  stageW / 5) + endCtaHolder2.width / 2, stageH / 2 + 180);
+		endCtaHolder1.position.set(stageW / 3 - endCtaHolder1.width / 2 - 40, stageH / 2 + 180);
+		endCtaHolder2.position.set(stageW / 3 + endCtaHolder2.width / 2 + 40, stageH / 2 + 180);
+		ahLogoEnd.position.set(stageW - ahLogo.width / 2, 220);
+
+		endFrame.addChild(overlayEnd);
+		endFrame.addChild(cabLogoEnd);
+		endFrame.addChild(endSubhead);
+		endFrame.addChild(endCtaHolder1);
+		endFrame.addChild(endCtaHolder2);
+		endFrame.addChild(ahLogoEnd);
+		endFrame.addChild(yourScoreText);
+
 
 		buildStage();
 	}
@@ -1015,6 +1169,38 @@ function init() {
 		//  END FRAME
 		// -----------
 
+		endFrame 		= new PIXI.Container();
+		endCtaHolder1	= new PIXI.Container();
+		endCtaHolder2	= new PIXI.Container();
+		cabLogoEnd 		= new PIXI.Container();
+
+		yourScoreText 	= new PIXI.Text('Your score: 0   ');
+		endSubhead 	= new PIXI.Text(' Great job! ' );
+		//cabCatchEnd  	= new PIXI.Sprite(resources['cab_catch.png'].texture);
+		//cabAEnd 	 	= new PIXI.Sprite(resources['cab_a.png'].texture);
+		//cabBiteEnd   	= new PIXI.Sprite(resources['cab_bite.png'].texture);
+		//cabBgEnd 	 	= new PIXI.Sprite(resources['cab_bg.png'].texture);
+		//cabCandy1End 	= new PIXI.Sprite(resources['cab_candy1.png'].texture);
+		//cabCandy2End 	= new PIXI.Sprite(resources['cab_candy2.png'].texture);
+		//cabCandy3End	= new PIXI.Sprite(resources['cab_candy3.png'].texture);
+		//cabCandy4End 	= new PIXI.Sprite(resources['cab_candy4.png'].texture);
+		endCtaBg1 		= new PIXI.Sprite(resources['cta_bg.png'].texture);
+		endCtaBg2 		= new PIXI.Sprite(resources['cta_bg.png'].texture);
+		endCtaText1 	= new PIXI.Text(' Play Again? ');
+		endCtaText2 	= new PIXI.Text(' Find a pack ');
+		ahLogoEnd 		= new PIXI.extras.AnimatedSprite(logoTextures);
+		overlayEnd 	    = new PIXI.Sprite(resources['endOverlay.png'].texture);
+
+		yourScoreText.style 	= Text.yourScoreTextStyle;
+		endSubhead.style 		= Text.subHeadTextStyle;
+		endCtaText1.style 		= Text.ctaTextStyle;
+		endCtaText2.style 		= Text.ctaTextStyle;
+
+
+
+
+
+
 		setPosition();
 	}
 
@@ -1065,6 +1251,8 @@ function init() {
 		'logo11.png',
 		'logo12.png',
 		'overlayBg_@2X.png',
+
+		'endOverlay.png'
 
 
 
