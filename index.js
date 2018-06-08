@@ -201,9 +201,47 @@ function init() {
 			return hit;
 			}
 
+		var catTest = function(r1, r2) {
+			var hit, combinedHalfWidths ,combinedHalfHeights, vx, vy;
+			hit = false;
+			r1.centerX = r1.toGlobal(app.stage.position).x + r1.width / 2;
+			r1.centerY = r1.toGlobal(app.stage.position).y + r1.height / 2;
+
+			r2.centerX = (r2.toGlobal(app.stage.position).x - 100) + r2.width / 4;
+			r2.centerY = (r2.toGlobal(app.stage.position).y - 100) + r2.width / 2;
+
+			r1.halfWidth = r1.width / 2;
+			r1.halfHeight = r1.height / 2;
+
+			r2.halfWidth = r2.width / 2;
+			r2.halfHeight = r2.height / 2;
+
+			vx = r1.centerX - r2.centerX;
+			vy = r1.centerY - r2.centerY;
+
+			combinedHalfWidths = r1.halfWidth + r2.halfWidth;
+			combinedHalfHeights = r1.halfHeight + r2.halfHeight;
+
+			if (Math.abs(vx) < combinedHalfWidths) {
+				//Collision X
+				if (Math.abs(vy) < combinedHalfHeights) {
+					//There's definitely a collision happening
+					hit = true;
+	    		} else {
+					//no collision on the y axis
+					hit = false;
+	    		}
+			} else {
+				//There's no collision on the x axis
+				hit = false;
+			}
+			return hit;
+		}
+
 			return {
 				random : random,
 				hitTest : hitTest,
+				catTest : catTest,
 				getMousePosition : getMousePosition
 		}
 	}());
@@ -380,14 +418,13 @@ function init() {
 		tlGameOver.add('begin')
 		.to(main, 				0.3, {pixi:{blurX:10.0, blurY:10.0}}, '+=1.0')
 		.from(overlayEnd, 		0.4, {pixi:{y:'-=400', alpha:0}, ease:Power3.easeOut})
-		//.from(gaGetEnd, 		0.8, {pixi:{scale:0.3, alpha:0}, ease:Elastic.easeOut})
-		//.from(cabAEnd, 			0.8, {pixi:{scale:0.3, alpha:0}, ease:Elastic.easeOut}, '-=0.7')
-		//.from(gaAirheadedEnd, 		0.8, {pixi:{scale:0.3, alpha:0}, ease:Elastic.easeOut}, '-=0.7')
-		//.from(gaBgEnd, 		0.2, {pixi:{scale:0,   alpha:0}, ease:Power3.easeOut}, '-=0.7')
-		//.from(gaCandy4End, 	0.6, {pixi:{scale:0.5, alpha:0}, ease:Elastic.easeOut}, '-=0.6')
-		//.from(gaCandy1End, 	0.6, {pixi:{scale:1.2, alpha:0}, ease:Elastic.easeOut}, '-=0.55')
-		//.from(gaCandy2End, 	0.6, {pixi:{scale:1.2, alpha:0}, ease:Elastic.easeOut}, '-=0.55')
-		//.from(gaCandy3End, 	0.6, {pixi:{scale:1.2, alpha:0}, ease:Elastic.easeOut}, '-=0.55')
+		.from(gaGetEnd, 		0.8, {pixi:{scale:0.3, alpha:0}, ease:Elastic.easeOut})
+		.from(gaAirheadedEnd, 		0.8, {pixi:{scale:0.3, alpha:0}, ease:Elastic.easeOut}, '-=0.7')
+		.from(gaBgEnd, 		0.2, {pixi:{scale:0,   alpha:0}, ease:Power3.easeOut}, '-=0.7')
+		.from(gaCandy4End, 	0.6, {pixi:{scale:0.5, alpha:0}, ease:Elastic.easeOut}, '-=0.6')
+		.from(gaCandy1End, 	0.6, {pixi:{scale:1.2, alpha:0}, ease:Elastic.easeOut}, '-=0.55')
+		.from(gaCandy2End, 	0.6, {pixi:{scale:1.2, alpha:0}, ease:Elastic.easeOut}, '-=0.55')
+		.from(gaCandy3End, 	0.6, {pixi:{scale:1.2, alpha:0}, ease:Elastic.easeOut}, '-=0.55')
 		.from(yourScoreText, 	0.6, {pixi:{y:'+=40',  alpha:0}, ease:Elastic.easeOut}, '-=0.55')
 		.from(endSubhead, 		0.6, {pixi:{y:'+=40',  alpha:0}, ease:Elastic.easeOut}, '-=0.55')
 		.from(ahLogoEnd, 		0.6, {pixi:{scale:0.7, alpha:0}, ease:Power3.easeOut}, '+=0.1')
@@ -428,6 +465,35 @@ function init() {
 		tlGameOver.play();
 	}
 
+	function handleDeath() {
+		//log('You Died');
+
+		loseSound.play();
+
+		ticker.stop();
+		//bottomHits = 0;
+		//airHead.y = -airHead.height;
+		t.set(airHead, {pixi:{y:-200}});
+		if (lives === 3 ) {
+			t.to(heart1, 0.05, {pixi:{alpha:0}, ease:Power3.easeOut, yoyo:true, repeat:4});
+			lives = 2;
+			setTimeout( function() {
+				ticker.start();
+				t.to(airHead, 0.1, {pixi:{alpha:0.1}, ease:Power0.easeNone, yoyo:true, repeat:11, delay:0.0});
+			}, 500);
+		} else if ( lives === 2) {
+			t.to(heart2, 0.05, {pixi:{alpha:0}, ease:Power3.easeOut, yoyo:true, repeat:4});
+			lives = 1;
+			setTimeout( function() {
+				ticker.start();
+				t.to(airHead, 0.1, {pixi:{alpha:0.1}, ease:Power0.easeNone, yoyo:true, repeat:11, delay:0.0});
+				}, 500);
+		} else if ( lives === 1 ) {
+			t.to(heart3, 0.05, {pixi:{alpha:0}, ease:Power3.easeOut, yoyo:true, repeat:4});
+			lives = 0;
+			handleGameOver(false);
+		}
+	}
 
 
 	function handleScore() {
@@ -442,44 +508,126 @@ function init() {
 		}
 	}
 
+	function resetCat() {
+		t.set(cat, {pixi:{x:Utils.random(-500, stageW + 500), y:Utils.random(stageH + 100, stageH + 3500)}} );
+		//t.set(cat, {pixi:{x:stageW / 2, y:stageH  } } );
+		cat.scale.x = cat.scale.y = 4;
+		catBlur.blur = 10;
+	}
 
-	var cx0, cy0, cx1, cy1, cyt, cxt, blurAmount, cnt = 0;
+	var catcm = 0.5, cyt, cxt;
+
+	var catTime = 0;
+
+	function handleCat() {
+
+		//log(elapsedTime);
+		catBlur.blur = cat.scale.x * 2;
+
+		catcm = Math.cos(cat.scale.x / 2.5)
+		catBrightness.brightness(catcm);
+
+		catTime += (1 / Math.round(ticker.FPS));
+		//log(catTime);
+
+		if (catTime > 5) {
+			//releaseCat();
+			//candyHolder.addChild(cat);
+			catTime = 0;
+		}
+
+		if (cat.scale.x < 0.6) {
+			candyHolder.setChildIndex(cat, 0);
+			catBlur.blur += 1.5;
+		}
+
+		if (cat.scale.x < 0.50 && cat.scale.x > 0.47 ) {
+			if (Utils.catTest(cat, airHead)) {
+				log('CAT COLLISION');
+				handleDeath();
+				resetCat();
+				missRate = 5;
+				catTime = 0;
+				//missRate = 0;
+				//handleScore();
+			}
+		}
+		if (cat.scale.x > 0) {
+			cat.y += cyt * 0.04;
+			cat.x += cxt * 0.005;
+			cat.scale.x = cat.scale.y -= 0.03;
+		} else {
+			// RESET CAT
+			resetCat();
+			//cat.scale.x = cat.scale.y = 0;
+			//cat.y = cat.x = -3000;
+		}
+
+
+
+
+	}
+
+
+	var cx0, cy0, cx1, cy1, cx2, cy2, cx3, cy3, blurAmount, cnt = 0;
 	var vpX, vpY, fl = 250, xPos, yPos, zPos, scale;
 
-	var cbcm0 = 0.5, cbcm1 = 0.5;
-	var catcm = 0.5
+	var cbcm0 = 0.5, cbcm1 = 0.5, cbcm2 = 0.5, cbcm3 = 0.5;
+
 
 	function resetCandyPos0() {
-		t.set(candy0, {pixi:{x:Utils.random(-200, stageW + 200), y:Utils.random(-100, -4000) }} );
+		t.set(candy0, {pixi:{x:Utils.random(-200, stageW / 2), y:Utils.random(-100, -4000) }} );
 		candy0.scale.x = candy0.scale.y = Utils.random(2, 4);
 		candyBlur0.blur = 10;
 		candy0.gotoAndStop(Utils.random(0, 6));
 	}
 
 	function resetCandyPos1() {
-		t.set(candy1, {pixi:{x:Utils.random(-200, stageW + 200), y:Utils.random(stageH + 100, stageH + 3500) }} );
+		t.set(candy1, {pixi:{x:Utils.random(-200, stageW / 2), y:Utils.random(stageH + 100, stageH + 3500) }} );
 		candy1.scale.x = candy1.scale.y = Utils.random(2, 4);
 		candyBlur1.blur = 10;
 		candy1.gotoAndStop(Utils.random(0, 6));
 	}
+
+	function resetCandyPos2() {
+		t.set(candy2, {pixi:{x:Utils.random(stageW / 2, stageW), y:Utils.random(-100,  -4000) }} );
+		candy2.scale.x = candy2.scale.y = Utils.random(2, 4);
+		candyBlur2.blur = 10;
+		candy2.gotoAndStop(Utils.random(0, 6));
+	}
+
+	function resetCandyPos3() {
+		t.set(candy3, {pixi:{x:Utils.random(stageW / 2, stageW), y:Utils.random(stageH + 100, stageH + 3500) }} );
+		candy3.scale.x = candy3.scale.y = Utils.random(2, 4);
+		candyBlur3.blur = 10;
+		candy3.gotoAndStop(Utils.random(0, 6));
+	}
+
 
 	function handleCandy(delta) {
 
 		//log(candy0.scale.x);
 
 		cy0 = stageH / 2 - candy0.y;
-		cx0 = stageW / 2 - candy0.x;
+		cx0 = stageW / 4 - candy0.x;
 
 		cy1 = stageH / 2 - candy1.y;
-		cx1 = stageW / 2 - candy1.x;
+		cx1 = stageW / 4 - candy1.x;
+
+		cy2 = stageH / 2 - candy2.y;
+		cx2 = (stageW / 2 + stageW / 4) - candy2.x;
+
+		cy3 = stageH / 2 - candy3.y;
+		cx3 = (stageW / 2 + stageW / 4) - candy3.x;
 
 		cyt = stageH / 2 - cat.y;
 		cxt = stageW / 2 - cat.x;
 
 		candyBlur0.blur = candy0.scale.x * 3;
 		candyBlur1.blur = candy1.scale.x * 3;
+		candyBlur2.blur = candy2.scale.x * 3;
+		candyBlur3.blur = candy3.scale.x * 3;
 
-		catBlur.blur = cat.scale.x * 1;
 
 		cbcm0 = Math.cos(candy0.scale.x / 2.0)
 		candyBrightness0.brightness(cbcm0);
@@ -487,36 +635,43 @@ function init() {
 		cbcm1 = Math.cos(candy1.scale.x / 2.5)
 		candyBrightness1.brightness(cbcm1);
 
-		catcm = Math.cos(cat.scale.x / 2.5)
-		catBrightness.brightness(catcm);
-
-		if (candy0.scale.x < 0.50 && candy0.scale.x > 0.45 ) {
+		if (candy0.scale.x < 0.60 && candy0.scale.x > 0.35 ) {
 			if (Utils.hitTest(candy0, hitRect)) {
 				log('CANDY COLLISION');
-				//t.set(candy0, {pixi:{x:Utils.random(-400, stageW + 400), y:Utils.random(-4000, -200) }} );
-				//candy0.scale.x = candy0.scale.y = Utils.random(2, 4);
-				//candyBlur0.blur = 10;
-				//candyHolder.swapChildren(candy0, airHead);
-				//candy0.gotoAndStop(Utils.random(0, 6));
 				resetCandyPos0();
 				missRate = 0;
 				handleScore();
 			}
 		}
 
-		if (candy1.scale.x < 0.50 && candy1.scale.x > 0.45 ) {
+		if (candy1.scale.x < 0.60 && candy1.scale.x > 0.35 ) {
 			if (Utils.hitTest(candy1, hitRect)) {
 				log('CANDY COLLISION');
-				//t.set(candy1, {pixi:{x:Utils.random(-400, stageW + 400), y:Utils.random(600, 4000)     }} );
-				//candy1.scale.x = candy1.scale.y = Utils.random(2, 4);
-				//candyBlur1.blur = 10;
-				//candyHolder.swapChildren(candy0, airHead);
-				//candy1.gotoAndStop(Utils.random(0, 6));
 				resetCandyPos1();
 				missRate = 0;
 				handleScore();
 			}
 		}
+
+		if (candy2.scale.x < 0.60 && candy2.scale.x > 0.35 ) {
+			if (Utils.hitTest(candy2, hitRect)) {
+				log('CANDY COLLISION');
+				resetCandyPos2();
+				missRate = 0;
+				handleScore();
+			}
+		}
+
+		if (candy3.scale.x < 0.60 && candy3.scale.x > 0.35 ) {
+			if (Utils.hitTest(candy3, hitRect)) {
+				log('CANDY COLLISION');
+				resetCandyPos3();
+				missRate = 0;
+				handleScore();
+			}
+		}
+
+
 
 		if (candy0.scale.x > 0) {
 			candy0.y += cy0 * 0.04;
@@ -528,14 +683,8 @@ function init() {
 				candy0.rotation = 0;
 			}
 		} else {
-			// RESET CANDY 0
-			//t.set(candy0, {pixi:{x:Utils.random(-400, stageW + 400), y:Utils.random(-4000, -200)}} );
-			//candy0.scale.x = candy0.scale.y = Utils.random(2, 4);
-			//candyBlur0.blur = 10;
-			//candy0.gotoAndStop(Utils.random(0, 6));
 			resetCandyPos0();
 			candyHolder.swapChildren(candy0, airHead);
-			//head.gotoAndStop(0);
 			missRate += 1;
 		}
 
@@ -543,40 +692,48 @@ function init() {
 			candy1.y += cy1 * 0.04;
 			candy1.x += cx1 * 0.005;
 			candy1.scale.x = candy1.scale.y -= 0.040;
-			//candy1.rotation += 0.025;
 			if (candy1.currentFrame === 4 || candy1.currentFrame === 5) {
 				candy1.rotation += 0.025;
 			} else {
 				candy1.rotation = 0;
 			}
 		} else {
-			// RESET CANDY 1
-			//t.set(candy1, {pixi:{x:Utils.random(-200, stageW + 200), y:Utils.random(500, 2000)}} );
-			//candy1.scale.x = candy1.scale.y = Utils.random(2, 4);
-			//candyBlur1.blur = 10;
-			//candy1.gotoAndStop(Utils.random(0, 6));
 			resetCandyPos1();
 			candyHolder.swapChildren(candy1, airHead);
-			//head.gotoAndStop(0);
 			missRate += 1;
 		}
 
-		if (cat.scale.x > 0) {
-			cat.y += cyt * 0.04;
-			cat.x += cxt * 0.005;
-			cat.scale.x = cat.scale.y -= 0.03;
+		if (candy2.scale.x > 0) {
+			candy2.y += cy2 * 0.04;
+			candy2.x += cx2 * 0.005;
+			candy2.scale.x = candy2.scale.y -= 0.040;
+			if (candy2.currentFrame === 4 || candy2.currentFrame === 5) {
+				candy2.rotation += 0.025;
+			} else {
+				candy2.rotation = 0;
+			}
 		} else {
-			// RESET CAT
-			t.set(cat, {pixi:{x:Utils.random(-100, stageW + 100), y:Utils.random(stageH + 100, stageH + 3500)}} );
-			cat.scale.x = cat.scale.y = 4;
-			catBlur.blur = 10;
-
-			//candy0.gotoAndStop(Utils.random(0, 6));
-			//resetCandyPos0();
-			//candyHolder.swapChildren(candy0, airHead);
-			//head.gotoAndStop(0);
-			//missRate += 1;
+			resetCandyPos2();
+			candyHolder.swapChildren(candy2, airHead);
+			missRate += 1;
 		}
+
+		if (candy3.scale.x > 0) {
+			candy3.y += cy3 * 0.04;
+			candy3.x += cx3 * 0.005;
+			candy3.scale.x = candy3.scale.y -= 0.040;
+			if (candy3.currentFrame === 4 || candy3.currentFrame === 5) {
+				candy3.rotation += 0.025;
+			} else {
+				candy3.rotation = 0;
+			}
+		} else {
+			resetCandyPos3();
+			candyHolder.swapChildren(candy3, airHead);
+			missRate += 1;
+		}
+
+
 
 		if (candy0.scale.x < 0.45) {
 			candyHolder.setChildIndex(candy0, 0);
@@ -588,6 +745,16 @@ function init() {
 			candyBlur1.blur += 1.5;
 		}
 
+		if (candy2.scale.x < 0.45) {
+			candyHolder.setChildIndex(candy2, 0);
+			candyBlur2.blur += 1.5;
+		}
+		if (candy3.scale.x < 0.45) {
+			candyHolder.setChildIndex(candy3, 0);
+			candyBlur3.blur += 1.5;
+		}
+
+
 		if (candy0.scale.x < 0.35) {
 			//candyBlur0.blur += 1.0;
 		}
@@ -596,9 +763,6 @@ function init() {
 
 	}
 
-	function handleCat() {
-
-	}
 
 	var bx, by;
 
@@ -724,7 +888,7 @@ function init() {
 	function setUpGame() {
 
 		initAudio();
-		Howler.volume(0.02);
+		//Howler.volume(0.5);
 
 		airHead.on('pointerup', function() {
 			head.play();
@@ -750,6 +914,7 @@ function init() {
 			intro.destroy();
 			playing = true;
 			ticker.start();
+			bgSound.play();
 		}
 
 		tlOutro.play();
@@ -978,6 +1143,8 @@ function init() {
 
 		candy0.filters = [candyBlur0, candyBrightness0];
 		candy1.filters = [candyBlur1, candyBrightness1];
+		candy2.filters = [candyBlur2, candyBrightness2];
+		candy3.filters = [candyBlur3, candyBrightness3];
 		cat.filters = [catBlur, catBrightness];
 
 
@@ -990,7 +1157,10 @@ function init() {
 
 		candyHolder.addChild(candy0);
 		candyHolder.addChild(candy1);
+		candyHolder.addChild(candy2);
+		candyHolder.addChild(candy3);
 		candyHolder.addChild(cat);
+
 		//candyHolder.addChild(candy2);
 		//candyHolder.addChild(candy3);
 		//candyHolder.addChild(candy4);
@@ -1000,10 +1170,17 @@ function init() {
 		//candies = [candy0, candy1, candy2, candy3, candy4, candy5, candy6];
 
 		candy0.scale.x = candy0.scale.y = Utils.random(2, 3);
-		t.set(candy0, {pixi:{x:Utils.random(0, stageW), y:Utils.random(-2000, -200)}} );
+		t.set(candy0, {pixi:{x:Utils.random(-200, stageW / 2), y:Utils.random(-2000, -200)}} );
 
 		candy1.scale.x = candy1.scale.y = Utils.random(2, 3);
-		t.set(candy1, {pixi:{x:Utils.random(0, stageW), y:Utils.random(stageH + 50, stageH + 2000)}} );
+		t.set(candy1, {pixi:{x:Utils.random(-200, stageW / 2), y:Utils.random(stageH + 50, stageH + 2000)}});
+
+		candy2.scale.x = candy2.scale.y = Utils.random(2, 3);
+		t.set(candy2, {pixi:{x:Utils.random(stageW / 2, stageW + 200), y:Utils.random(-2000, -200)}} );
+
+		candy3.scale.x = candy3.scale.y = Utils.random(2, 3);
+		t.set(candy3, {pixi:{x:Utils.random(stageW / 2, stageW + 200), y:Utils.random(stageH + 50, stageH + 2000)}});
+
 
 		cat.scale.x = candy1.scale.y = 3;
 		t.set(cat, {pixi:{x:Utils.random(0, stageW), y:Utils.random(stageH + 50, stageH + 2000)}} );
@@ -1073,8 +1250,35 @@ function init() {
 		ahLogoEnd.animationSpeed = 0.3;
 		ahLogoEnd.loop = false;
 
-		//gaLogoEnd.scale.set(0.42);
-		//gaLogoEnd.position.set(stageW / 3 - gaLogoEnd.width / 2 - 10, 26);
+
+		gaGetEnd.anchor.set(0.5)
+		gaGetEnd.position.set(gaGetEnd.width/2, gaGetEnd.height / 2);
+
+		gaAirheadedEnd.anchor.set(0.5)
+		gaAirheadedEnd.position.set(gaAirheadedEnd.width/2, gaAirheadedEnd.height / 2);
+
+		gaBgEnd.anchor.set(0.5)
+		gaBgEnd.position.set(gaBgEnd.width/2, gaBgEnd.height / 2);
+		gaCandy1End.anchor.set(0.5)
+		gaCandy1End.position.set(gaBgEnd.width/2, gaBgEnd.height / 2);
+		gaCandy2End.anchor.set(0.5)
+		gaCandy2End.position.set(gaBgEnd.width/2, gaBgEnd.height / 2);
+		gaCandy3End.anchor.set(0.5)
+		gaCandy3End.position.set(gaBgEnd.width/2, gaBgEnd.height / 2);
+		gaCandy4End.anchor.set(0.5)
+		gaCandy4End.position.set(gaBgEnd.width/2, gaBgEnd.height / 2);
+
+		gaLogoEnd.addChild(gaCandy4End);
+		gaLogoEnd.addChild(gaBgEnd);
+		gaLogoEnd.addChild(gaGetEnd);
+		gaLogoEnd.addChild(gaAirheadedEnd);
+		gaLogoEnd.addChild(gaCandy1End);
+		gaLogoEnd.addChild(gaCandy2End);
+		gaLogoEnd.addChild(gaCandy3End);
+
+		gaLogoEnd.scale.set(0.42);
+		gaLogoEnd.position.set(stageW / 3 - gaLogoEnd.width / 2 - 10, 26);
+
 		yourScoreText.position.set(stageW / 3 - yourScoreText.width / 2, 168);
 		endSubhead.position.set(stageW / 3 - endSubhead.width / 2, 284);
 		//endCtaHolder1.position.set(stageW / 3 , stageH / 2 + 180);
@@ -1090,8 +1294,6 @@ function init() {
 		endFrame.addChild(endCtaHolder2);
 		endFrame.addChild(ahLogoEnd);
 		endFrame.addChild(yourScoreText);
-
-
 		buildStage();
 	}
 
@@ -1155,6 +1357,12 @@ function init() {
 		candyBrightness1 = new PIXI.filters.ColorMatrixFilter();
 		candyBrightness1.brightness(0.5);
 
+		candyBrightness2 = new PIXI.filters.ColorMatrixFilter();
+		candyBrightness2.brightness(0.5);
+
+		candyBrightness3 = new PIXI.filters.ColorMatrixFilter();
+		candyBrightness3.brightness(0.5);
+
 		catBrightness = new PIXI.filters.ColorMatrixFilter();
 		catBrightness.brightness(0.5);
 
@@ -1168,7 +1376,7 @@ function init() {
 		bgHolder.width = 1700;
 		bgHolder.height = 800;
 
-		sky_bg = new PIXI.Sprite(resources['sky_bg_test.jpg'].texture);
+		sky_bg = new PIXI.Sprite(resources['sky_bg.jpg'].texture);
 
 		// - interface
 		// -- score
@@ -1247,8 +1455,13 @@ function init() {
 
 		candy0 = new PIXI.extras.AnimatedSprite(candyTextures);
 		candy1 = new PIXI.extras.AnimatedSprite(candyTextures);
+		candy2 = new PIXI.extras.AnimatedSprite(candyTextures);
+		candy3 = new PIXI.extras.AnimatedSprite(candyTextures);
+
 		candy0.gotoAndStop(Utils.random(0, 6));
 		candy1.gotoAndStop(Utils.random(0, 6));
+		candy2.gotoAndStop(Utils.random(0, 6));
+		candy3.gotoAndStop(Utils.random(0, 6));
 
 		cat = new PIXI.Sprite(resources['cat.png'].texture);
 
@@ -1273,14 +1486,16 @@ function init() {
 
 		yourScoreText 	= new PIXI.Text('Your score: 0   ');
 		endSubhead 	= new PIXI.Text(' Great job! ' );
-		//gaGetEnd  	= new PIXI.Sprite(resources['cab_catch.png'].texture);
-		//cabAEnd 	 	= new PIXI.Sprite(resources['cab_a.png'].texture);
-		//gaAirheadedEnd   	= new PIXI.Sprite(resources['cab_bite.png'].texture);
-		//gaBgEnd 	 	= new PIXI.Sprite(resources['cab_bg.png'].texture);
-		//gaCandy1End 	= new PIXI.Sprite(resources['cab_candy1.png'].texture);
-		//gaCandy2End 	= new PIXI.Sprite(resources['cab_candy2.png'].texture);
-		//gaCandy3End	= new PIXI.Sprite(resources['cab_candy3.png'].texture);
-		//gaCandy4End 	= new PIXI.Sprite(resources['cab_candy4.png'].texture);
+
+		gaGetEnd 		= new PIXI.Sprite(resources['ga_get.png'].texture);
+		gaAirheadedEnd = new PIXI.Sprite(resources['ga_airheaded.png'].texture);
+		gaBgEnd 		= new PIXI.Sprite(resources['ga_bg.png'].texture);
+		gaCandy1End 	= new PIXI.Sprite(resources['ga_candy1.png'].texture);
+		gaCandy2End 	= new PIXI.Sprite(resources['ga_candy2.png'].texture);
+		gaCandy3End	= new PIXI.Sprite(resources['ga_candy3.png'].texture);
+		gaCandy4End 	= new PIXI.Sprite(resources['ga_candy4.png'].texture);
+
+
 		endCtaBg1 		= new PIXI.Sprite(resources['cta_bg.png'].texture);
 		endCtaBg2 		= new PIXI.Sprite(resources['cta_bg.png'].texture);
 		endCtaText1 	= new PIXI.Text(' Play Again? ');
@@ -1371,6 +1586,7 @@ function init() {
 		handleAirHead(delta);
 		handleCandy(delta);
 		handleTimer(delta);
+		handleCat(delta);
 	});
 
 	$(window).blur(function(){
