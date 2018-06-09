@@ -71,7 +71,7 @@ function init() {
 	var ctaBg, ctaText, ctaHolder, overlay, ahLogo, logoTextures, instructionText, gaLogo, gaGet, gaAirheaded, gaBg, gaCandy1, gaCandy2, gaCandy3, gaCandy4, intro;
 
 	//MAIN
-	var main, bgHolder, candyHolder, fgHolder, airheadHolder, hitRect;
+	var main, bgHolder, candyHolder, fgHolder, airheadHolder, hitRect, stageHit;
 	var sky_bg;
 	var candy0, candy1, candy2, candy3, candy4, candy5, candy6;
 	var candyBlur0, candyBlur1, candyBlur2, candyBlur3, candyBlur4, candyBlur5, candyBlur6;
@@ -809,6 +809,8 @@ function init() {
 	var flopRate =  4.5;  //4.625;
 	var bodyFlopRate = 1.5;
 
+	var ex, ey;
+
 	function handleAirHead() {
 
 		if (missRate > 5) {
@@ -838,6 +840,16 @@ function init() {
 			}
 		}
 
+		stageHit.on('pointertap', function(e){
+			//log('pointer tap');
+			//log(e.data.global.x);
+
+			ex = e.data.global.x;
+			ey = e.data.global.y;
+
+
+		})
+
 		ax = dx * spring;
 		ay = dy * spring;
 		vx += ax;
@@ -845,8 +857,14 @@ function init() {
 		vx *= friction;
 		vy *= friction;
 
+
+
 		airHead.y += vy + 30;
 		airHead.x += vx;
+
+		//airHead.y = ey + 30;
+		//airHead.x = ex;
+
 
 		head.rotation = (-dx / flopRate * (Math.PI / 180));
 		airBody.rotation = (dx / 8.5 * (Math.PI / 180));
@@ -1207,6 +1225,7 @@ function init() {
 		main.addChild(bgHolder);
 		//main.addChild(airHead);
 
+		main.addChild(stageHit);
 		main.addChild(candyHolder);
 		main.addChild(interfaceHolder);
 
@@ -1406,6 +1425,15 @@ function init() {
 		hitRect.interactive = true;
 		hitRect.buttonMode = true;
 		hitRect.hitArea = new PIXI.Rectangle(0, 0, 200, 100);
+
+		stageHit = new PIXI.Graphics();
+		stageHit.beginFill(0xFF3300);
+		stageHit.drawRect(0, 0, stageW, stageH);
+		stageHit.endFill();
+		stageHit.alpha = 0.0;
+		stageHit.interactive = true;
+		stageHit.buttonMode = true;
+		stageHit.hitArea = new PIXI.Rectangle(0, 0, stageHit.width, stageHit.height);
 
 		// -- Body
 		airBody = new PIXI.Container();
