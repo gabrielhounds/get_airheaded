@@ -283,14 +283,11 @@ function init() {
 			//log(audioCount);
 			if (audioCount === 7) {
 				//setTimeout( function() { bgSound.play(); }, 500);
-
 				//setTimeout( function() { bgSound.play(); ticker.start(); playing = true;}, 500);
 				//intro.alpha = 0.0;
 				//intro.destroy();
-
 			}
 		}
-
 
 		bgSound.once('load', updateAudioProgress());
 		flapSound.once('load', updateAudioProgress());
@@ -356,7 +353,6 @@ function init() {
 
 		//airBody.alpha = (0.0);
         //head.alpha = (0.0);
-
 		//airHead.y = stageH - 140;
 
 		if (playing === false) {
@@ -371,7 +367,9 @@ function init() {
 
 			resetCandyPos0();
 			resetCandyPos1();
-
+			resetCandyPos2();
+			resetCandyPos3();
+			resetCat();
 
 			t.set([heart1, heart2, heart3], {pixi:{alpha:1}});
 			mainBlur.blur = 0.0;
@@ -510,7 +508,6 @@ function init() {
 
 	function resetCat() {
 		t.set(cat, {pixi:{x:Utils.random(-500, stageW + 500), y:Utils.random(stageH + 100, stageH + 3500)}} );
-		//t.set(cat, {pixi:{x:stageW / 2, y:stageH  } } );
 		cat.scale.x = cat.scale.y = 4;
 		catBlur.blur = 10;
 	}
@@ -522,19 +519,13 @@ function init() {
 	function handleCat() {
 
 		//log(elapsedTime);
-		catBlur.blur = cat.scale.x * 2;
 
+		catBlur.blur = cat.scale.x * 2;
 		catcm = Math.cos(cat.scale.x / 2.5)
 		catBrightness.brightness(catcm);
 
 		catTime += (1 / Math.round(ticker.FPS));
 		//log(catTime);
-
-		if (catTime > 5) {
-			//releaseCat();
-			//candyHolder.addChild(cat);
-			catTime = 0;
-		}
 
 		if (cat.scale.x < 0.6) {
 			candyHolder.setChildIndex(cat, 0);
@@ -543,7 +534,7 @@ function init() {
 
 		if (cat.scale.x < 0.50 && cat.scale.x > 0.47 ) {
 			if (Utils.catTest(cat, airHead)) {
-				log('CAT COLLISION');
+				//log('CAT COLLISION');
 				handleDeath();
 				resetCat();
 				missRate = 5;
@@ -556,6 +547,7 @@ function init() {
 			cat.y += cyt * 0.04;
 			cat.x += cxt * 0.005;
 			cat.scale.x = cat.scale.y -= 0.03;
+			//cat.rotation -= 0.025;
 		} else {
 			// RESET CAT
 			resetCat();
@@ -568,6 +560,11 @@ function init() {
 
 	}
 
+		/*t.set(candy0, {pixi:{x:Utils.random(-200, stageW / 2), y:Utils.random(-2000, -200)}} );
+		t.set(candy1, {pixi:{x:Utils.random(-200, stageW / 2), y:Utils.random(stageH + 50, stageH + 2000)}});
+		t.set(candy2, {pixi:{x:Utils.random(stageW / 2, stageW + 200), y:Utils.random(-2000, -200)}} );
+		t.set(candy3, {pixi:{x:Utils.random(stageW / 2, stageW + 200), y:Utils.random(stageH + 50, stageH + 2000)}});*/
+
 
 	var cx0, cy0, cx1, cy1, cx2, cy2, cx3, cy3, blurAmount, cnt = 0;
 	var vpX, vpY, fl = 250, xPos, yPos, zPos, scale;
@@ -576,28 +573,33 @@ function init() {
 
 
 	function resetCandyPos0() {
-		t.set(candy0, {pixi:{x:Utils.random(-200, stageW / 2), y:Utils.random(-100, -4000) }} );
+		//t.set(candy0, {pixi:{x:Utils.random(-200, stageW / 2), y:Utils.random(-100, -4000) }} );
+		t.set(candy0, {pixi:{x:Utils.random(-200, stageW / 2), y:Utils.random(-100, -3000) }} );
 		candy0.scale.x = candy0.scale.y = Utils.random(2, 4);
 		candyBlur0.blur = 10;
 		candy0.gotoAndStop(Utils.random(0, 6));
 	}
 
 	function resetCandyPos1() {
-		t.set(candy1, {pixi:{x:Utils.random(-200, stageW / 2), y:Utils.random(stageH + 100, stageH + 3500) }} );
+		t.set(candy1, {pixi:{x:Utils.random(stageW / 2, -200), y:Utils.random(stageH + 100, stageH + 2500) }} );
+		//t.set(candy1, {pixi:{x:Utils.random(-200, stageW / 2), y:Utils.random(stageH + 100, stageH + 3500) }} );
 		candy1.scale.x = candy1.scale.y = Utils.random(2, 4);
 		candyBlur1.blur = 10;
 		candy1.gotoAndStop(Utils.random(0, 6));
 	}
 
 	function resetCandyPos2() {
-		t.set(candy2, {pixi:{x:Utils.random(stageW / 2, stageW), y:Utils.random(-100,  -4000) }} );
+		//t.set(candy2, {pixi:{x:Utils.random(stageW / 2, stageW), y:Utils.random(-100,  -4000) }} );
+		t.set(candy2, {pixi:{x:Utils.random(stageW / 2, stageW + 200), y:Utils.random(-100, -3000)}} );
 		candy2.scale.x = candy2.scale.y = Utils.random(2, 4);
 		candyBlur2.blur = 10;
 		candy2.gotoAndStop(Utils.random(0, 6));
 	}
 
 	function resetCandyPos3() {
-		t.set(candy3, {pixi:{x:Utils.random(stageW / 2, stageW), y:Utils.random(stageH + 100, stageH + 3500) }} );
+		t.set(candy3, {pixi:{x:Utils.random(stageW / 2, stageW + 200), y:Utils.random(stageH + 100, stageH + 2500)}});
+
+		//t.set(candy3, {pixi:{x:Utils.random(stageW / 2, stageW), y:Utils.random(stageH + 100, stageH + 3500) }} );
 		candy3.scale.x = candy3.scale.y = Utils.random(2, 4);
 		candyBlur3.blur = 10;
 		candy3.gotoAndStop(Utils.random(0, 6));
@@ -609,16 +611,18 @@ function init() {
 		//log(candy0.scale.x);
 
 		cy0 = stageH / 2 - candy0.y;
-		cx0 = stageW / 4 - candy0.x;
+		cx0 = stageW / 2 - candy0.x;
 
 		cy1 = stageH / 2 - candy1.y;
-		cx1 = stageW / 4 - candy1.x;
+		cx1 = stageW / 2 - candy1.x;
 
 		cy2 = stageH / 2 - candy2.y;
-		cx2 = (stageW / 2 + stageW / 4) - candy2.x;
+		cx2 = stageW / 2 - candy2.x;
+		//cx2 = (stageW / 2 + stageW / 4) - candy2.x;
 
 		cy3 = stageH / 2 - candy3.y;
-		cx3 = (stageW / 2 + stageW / 4) - candy3.x;
+		cx3 = stageW / 2 - candy3.x;
+		//cx3 = (stageW / 2 + stageW / 4) - candy3.x;
 
 		cyt = stageH / 2 - cat.y;
 		cxt = stageW / 2 - cat.x;
@@ -637,7 +641,7 @@ function init() {
 
 		if (candy0.scale.x < 0.60 && candy0.scale.x > 0.35 ) {
 			if (Utils.hitTest(candy0, hitRect)) {
-				log('CANDY COLLISION');
+				//log('CANDY COLLISION');
 				resetCandyPos0();
 				missRate = 0;
 				handleScore();
@@ -646,7 +650,7 @@ function init() {
 
 		if (candy1.scale.x < 0.60 && candy1.scale.x > 0.35 ) {
 			if (Utils.hitTest(candy1, hitRect)) {
-				log('CANDY COLLISION');
+				//log('CANDY COLLISION');
 				resetCandyPos1();
 				missRate = 0;
 				handleScore();
@@ -655,7 +659,7 @@ function init() {
 
 		if (candy2.scale.x < 0.60 && candy2.scale.x > 0.35 ) {
 			if (Utils.hitTest(candy2, hitRect)) {
-				log('CANDY COLLISION');
+				//log('CANDY COLLISION');
 				resetCandyPos2();
 				missRate = 0;
 				handleScore();
@@ -664,7 +668,7 @@ function init() {
 
 		if (candy3.scale.x < 0.60 && candy3.scale.x > 0.35 ) {
 			if (Utils.hitTest(candy3, hitRect)) {
-				log('CANDY COLLISION');
+				//log('CANDY COLLISION');
 				resetCandyPos3();
 				missRate = 0;
 				handleScore();
@@ -733,8 +737,6 @@ function init() {
 			missRate += 1;
 		}
 
-
-
 		if (candy0.scale.x < 0.45) {
 			candyHolder.setChildIndex(candy0, 0);
 			candyBlur0.blur += 1.5;
@@ -767,20 +769,6 @@ function init() {
 	var bx, by;
 
 	function handleBg() {
-		mousePos = Utils.getMousePosition();
-		//log('MOUSE X = ' + mousePos.x);
-		//log('MOUSE Y = ' + mousePos.y);
-
-		//bx = -(mousePos.x / 1.328);
-		//by = -(mousePos.y / 1.6);
-
-		//bgHolder.x = bx * 0.15;
-		//bgHolder.y = by * 0.15;
-
-		//bgHolder.scale.x = bgHolder.scale.y -= 0.0005;
-		//bgHolder.x += 0.005;
-		//bgHolder.y += 0.005;
-
 
 		if (sky_bg.scale.x > 0.8) {
 			sky_bg.scale.x = sky_bg.scale.y -= 0.0004;
@@ -826,8 +814,6 @@ function init() {
 		if (missRate > 5) {
 			head.gotoAndStop(0);
 		}
-
-
 
 		mousePos = Utils.getMousePosition();
 		//dx = (mousePos.x - airHead.x) * easing;
@@ -971,8 +957,6 @@ function init() {
 		// -----------
 		//  INTRO
 		// -----------
-
-
 
 		gaGet.anchor.set(0.5)
 		gaAirheaded.anchor.set(0.5)
@@ -1135,8 +1119,8 @@ function init() {
 
 		candy0.anchor.set(0.5);
 		candy1.anchor.set(0.5);
-		//candy2.anchor.set(0.5);
-		//candy3.anchor.set(0.5);
+		candy2.anchor.set(0.5);
+		candy3.anchor.set(0.5);
 		//candy4.anchor.set(0.5);
 		//candy5.anchor.set(0.5);
 		//candy6.anchor.set(0.5);
@@ -1334,8 +1318,6 @@ function init() {
 		gaCandy3	= new PIXI.Sprite(resources['ga_candy3.png'].texture);
 		gaCandy4 	= new PIXI.Sprite(resources['ga_candy4.png'].texture);
 
-
-
 		// -----------
 		//  MAIN
 		// -----------
@@ -1465,16 +1447,6 @@ function init() {
 
 		cat = new PIXI.Sprite(resources['cat.png'].texture);
 
-
-		//candy0 			= new PIXI.Sprite(resources['candy_01.png'].texture);
-		//candy1 			= new PIXI.Sprite(resources['candy_06.png'].texture);
-		//candy2 			= new PIXI.Sprite(resources['candy_02.png'].texture);
-		//candy3 			= new PIXI.Sprite(resources['candy_03.png'].texture);
-		//candy4 			= new PIXI.Sprite(resources['candy_04.png'].texture);
-		//candy5 			= new PIXI.Sprite(resources['candy_05.png'].texture);
-		//candy6 			= new PIXI.Sprite(resources['candy_06.png'].texture);
-
-
 		// -----------
 		//  END FRAME
 		// -----------
@@ -1507,11 +1479,6 @@ function init() {
 		endSubhead.style 		= Text.subHeadTextStyle;
 		endCtaText1.style 		= Text.ctaTextStyle;
 		endCtaText2.style 		= Text.ctaTextStyle;
-
-
-
-
-
 
 		setPosition();
 	}
@@ -1572,11 +1539,7 @@ function init() {
 		'ga_candy2.png',
 		'ga_candy3.png',
 		'ga_candy4.png',
-
-
 		'endOverlay.png'
-
-
 
 	]).on('progress', loadProgressHandler).load(setUp);
 
@@ -1590,21 +1553,15 @@ function init() {
 	});
 
 	$(window).blur(function(){
-		//your code here
 		if (playing === true) {
 			ticker.stop();
 		}
 	});
 	$(window).focus(function(){
-		//your code
 		if (playing === true) {
 			setTimeout( function() { ticker.start(); }, 500);
 		}
 	})
-
-
-
-
 
 	initStage();
 
