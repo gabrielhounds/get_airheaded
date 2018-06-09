@@ -590,14 +590,14 @@ function init() {
 	}
 
 	function resetCandyPos2() {
-		t.set(candy2, {pixi:{x:Utils.random(stageW / 2, stageW), y:Utils.random(-100,  -4000) }} );
+		t.set(candy2, {pixi:{x:Utils.random(0, stageW), y:Utils.random(-100,  -4000) }} );
 		candy2.scale.x = candy2.scale.y = Utils.random(2, 4);
 		candyBlur2.blur = 10;
 		candy2.gotoAndStop(Utils.random(0, 6));
 	}
 
 	function resetCandyPos3() {
-		t.set(candy3, {pixi:{x:Utils.random(stageW / 2, stageW), y:Utils.random(stageH + 100, stageH + 3500) }} );
+		t.set(candy3, {pixi:{x:Utils.random(0, stageW), y:Utils.random(stageH + 100, stageH + 3500) }} );
 		candy3.scale.x = candy3.scale.y = Utils.random(2, 4);
 		candyBlur3.blur = 10;
 		candy3.gotoAndStop(Utils.random(0, 6));
