@@ -207,13 +207,13 @@ function init() {
 			r1.centerX = r1.toGlobal(app.stage.position).x + r1.width / 2;
 			r1.centerY = r1.toGlobal(app.stage.position).y + r1.height / 2;
 
-			r2.centerX = (r2.toGlobal(app.stage.position).x - 100) + r2.width / 4;
-			r2.centerY = (r2.toGlobal(app.stage.position).y - 100) + r2.width / 2;
+			r2.centerX = (r2.toGlobal(app.stage.position).x - 75) + r2.width / 2;
+			r2.centerY = (r2.toGlobal(app.stage.position).y ) + r2.width / 2;
 
 			r1.halfWidth = r1.width / 2;
 			r1.halfHeight = r1.height / 2;
 
-			r2.halfWidth = r2.width / 2;
+			r2.halfWidth = r2.width / 4;
 			r2.halfHeight = r2.height / 2;
 
 			vx = r1.centerX - r2.centerX;
@@ -508,7 +508,13 @@ function init() {
 	}
 
 	function resetCat() {
+
+
+
 		t.set(cat, {pixi:{x:Utils.random(-500, stageW + 500), y:Utils.random(stageH + 100, stageH + 3500)}} );
+		//t.set(cat, {pixi:{x:stageW / 2, y:Utils.random(stageH + 100, stageH + 3500)}} );
+
+
 		cat.scale.x = cat.scale.y = 4;
 		catBlur.blur = 10;
 	}
@@ -520,6 +526,9 @@ function init() {
 	function handleCat() {
 
 		//log(elapsedTime);
+		cyt = stageH / 2 - cat.y;
+		cxt = stageW / 2 - cat.x;
+
 
 		catBlur.blur = cat.scale.x * 2;
 		catcm = Math.cos(cat.scale.x / 2.5)
@@ -547,6 +556,7 @@ function init() {
 
 		if (catTime > 5) {
 			if (cat.scale.x > 0) {
+				candyHolder.setChildIndex(airHead, 0);
 				cat.y += cyt * 0.04;
 				cat.x += cxt * 0.005;
 				cat.scale.x = cat.scale.y -= 0.03;
@@ -622,8 +632,7 @@ function init() {
 		cx3 = stageW / 2 - candy3.x;
 		//cx3 = (stageW / 2 + stageW / 4) - candy3.x;
 
-		cyt = stageH / 2 - cat.y;
-		cxt = stageW / 2 - cat.x;
+
 
 		candyBlur0.blur = candy0.scale.x * 2;
 		candyBlur1.blur = candy1.scale.x * 2;
@@ -1137,6 +1146,9 @@ function init() {
 		candy1.anchor.set(0.5);
 		candy2.anchor.set(0.5);
 		candy3.anchor.set(0.5);
+
+		cat.anchor.set(0.5);
+
 		//candy4.anchor.set(0.5);
 		//candy5.anchor.set(0.5);
 		//candy6.anchor.set(0.5);
@@ -1182,8 +1194,8 @@ function init() {
 		t.set(candy3, {pixi:{x:Utils.random(stageW / 2, stageW + 200), y:Utils.random(stageH + 50, stageH + 2000)}});
 
 
-		cat.scale.x = candy1.scale.y = 3;
-		t.set(cat, {pixi:{x:Utils.random(0, stageW), y:Utils.random(stageH + 50, stageH + 2000)}} );
+		cat.scale.x = candy1.scale.y = 4;
+		t.set(cat, {pixi:{x:Utils.random(0, stageW), y:Utils.random(stageH + 1000, stageH + 5000)}} );
 
 		/*
 		//candies = [candy0, candy1];
@@ -1581,11 +1593,12 @@ function init() {
 	$(window).blur(function(){
 		if (playing === true) {
 			ticker.stop();
+			Howler.volume(0.0);
 		}
 	});
 	$(window).focus(function(){
 		if (playing === true) {
-			setTimeout( function() { ticker.start(); }, 500);
+			setTimeout( function() { ticker.start(); Howler.volume(1.0);}, 500);
 		}
 	})
 
