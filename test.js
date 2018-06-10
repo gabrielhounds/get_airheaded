@@ -508,15 +508,12 @@ function init() {
 	}
 
 	function resetCat() {
-
-
-
-		t.set(cat, {pixi:{x:Utils.random(-500, stageW + 500), y:Utils.random(stageH + 100, stageH + 3500)}} );
+		t.set(cat, {pixi:{x:Utils.random(-1200, stageW + 1200), y:Utils.random(stageH + 800, stageH + 3500)}} );
 		//t.set(cat, {pixi:{x:stageW / 2, y:Utils.random(stageH + 100, stageH + 3500)}} );
-
-
-		cat.scale.x = cat.scale.y = 4;
+		cat.scale.x = cat.scale.y = 5;
 		catBlur.blur = 10;
+		candyHolder.setChildIndex(cat, candyHolder.length - 1);
+		catTime = 0;
 	}
 
 	var catcm = 0.5, cyt, cxt;
@@ -529,12 +526,12 @@ function init() {
 		cyt = stageH / 2 - cat.y;
 		cxt = stageW / 2 - cat.x;
 
-
-		catBlur.blur = cat.scale.x * 2;
+		catBlur.blur = cat.scale.x * 1;
 		catcm = Math.cos(cat.scale.x / 2.5)
 		catBrightness.brightness(catcm);
 
 		catTime += (1 / Math.round(ticker.FPS));
+
 		//log(catTime);
 
 		if (cat.scale.x < 0.6) {
@@ -556,10 +553,13 @@ function init() {
 
 		if (catTime > 5) {
 			if (cat.scale.x > 0) {
-				candyHolder.setChildIndex(airHead, 0);
+				//cat.y += cyt * 0.04;
+				//cat.x += cxt * 0.005;
+
 				cat.y += cyt * 0.04;
-				cat.x += cxt * 0.005;
-				cat.scale.x = cat.scale.y -= 0.03;
+				cat.x += cxt * 0.04;
+
+				cat.scale.x = cat.scale.y -= 0.035;
 				//cat.rotation -= 0.025;
 			} else {
 				// RESET CAT
@@ -586,6 +586,8 @@ function init() {
 		candy0.scale.x = candy0.scale.y = Utils.random(2, 4);
 		candyBlur0.blur = 10;
 		candy0.gotoAndStop(Utils.random(0, 6));
+
+		//candyHolder.setChildIndex(candy0, candyHolder.length - 1);
 	}
 
 	function resetCandyPos1() {
@@ -594,6 +596,8 @@ function init() {
 		candy1.scale.x = candy1.scale.y = Utils.random(2, 4);
 		candyBlur1.blur = 10;
 		candy1.gotoAndStop(Utils.random(0, 6));
+
+		//candyHolder.setChildIndex(candy1, candyHolder.length - 1);
 	}
 
 	function resetCandyPos2() {
@@ -602,6 +606,8 @@ function init() {
 		candy2.scale.x = candy2.scale.y = Utils.random(2, 4);
 		candyBlur2.blur = 10;
 		candy2.gotoAndStop(Utils.random(0, 6));
+
+		//candyHolder.setChildIndex(candy2, candyHolder.length - 1);
 	}
 
 	function resetCandyPos3() {
@@ -611,6 +617,8 @@ function init() {
 		candy3.scale.x = candy3.scale.y = Utils.random(2, 4);
 		candyBlur3.blur = 10;
 		candy3.gotoAndStop(Utils.random(0, 6));
+
+		//candyHolder.setChildIndex(candy3, candyHolder.length - 1);
 	}
 
 
