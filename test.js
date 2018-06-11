@@ -4,7 +4,7 @@ $(document).ready(function(){
 
 function init() {
 	var log = console.log;
-	log('init');
+	//log('init');
 
 	var Utils = {};
 	var Game = {};
@@ -159,18 +159,9 @@ function init() {
 			return Math.round(Math.random() * (max - min) + min);
 		}
 
-		// hitRect.toGlobal(app.stage.position).x
-		// hitRect.toGlobal(app.stage.position).y
-
 		var hitTest = function(r1, r2) {
 			var hit, combinedHalfWidths ,combinedHalfHeights, vx, vy;
 			hit = false;
-
-			//r1.centerX = r1.x;
-			//r1.centerY = r1.y;
-
-			//r2.centerX = r2.x;
-			//r2.centerY = r2.y;
 
 			r1.centerX = r1.toGlobal(app.stage.position).x + r1.width / 2;
 			r1.centerY = r1.toGlobal(app.stage.position).y + r1.height / 2;
@@ -356,10 +347,6 @@ function init() {
 		buttonSound.play();
 		endCtaHolder1.off('pointerup');
 
-		//airBody.alpha = (0.0);
-        //head.alpha = (0.0);
-		//airHead.y = stageH - 140;
-
 		if (playing === false) {
 			score = 0;
 			scoreText.setText(score);
@@ -416,9 +403,6 @@ function init() {
 			yourScoreText.position.set(stageW / 2 - yourScoreText.width / 2, stageH / 2 - yourScoreText.height * 2 );
 		}
 
-
-		//yourScoreText.position.set(stageW / 3 - yourScoreText.width / 2, 168);
-
 		tlGameOver.add('begin')
 		.to(main, 				0.3, {pixi:{blurX:10.0, blurY:10.0}}, '+=1.0')
 		.from(overlayEnd, 		0.4, {pixi:{y:'-=400', alpha:0}, ease:Power3.easeOut})
@@ -438,7 +422,6 @@ function init() {
 		.addCallback(function() { setUpEndCta(); })
 		.add('end');
 
-		//, onComplete:setUpEndCta
 
 		function setUpEndCta() {
 			//log('end cta');
@@ -1204,41 +1187,22 @@ function init() {
 
 		candies = [candy0, candy1, candy2, candy3];
 
-		//candyHolder.addChild(candy2);
-		//candyHolder.addChild(candy3);
-		//candyHolder.addChild(candy4);
-		//candyHolder.addChild(candy5);
-		//candyHolder.addChild(candy6);
-
-		//candies = [candy0, candy1, candy2, candy3, candy4, candy5, candy6];
 
 		candy0.scale.x = candy0.scale.y = Utils.random(2, 3);
-		t.set(candy0, {pixi:{x:Utils.random(-200, stageW / 2), y:Utils.random(-2000, -300)}} );
+		t.set(candy0, {pixi:{x:Utils.random(-200, stageW / 2), y:Utils.random(-2000, -400)}} );
 
 		candy1.scale.x = candy1.scale.y = Utils.random(2, 3);
-		t.set(candy1, {pixi:{x:Utils.random(-200, stageW / 2), y:Utils.random(stageH + 150, stageH + 2000)}});
+		t.set(candy1, {pixi:{x:Utils.random(-200, stageW / 2), y:Utils.random(stageH + 250, stageH + 2000)}});
 
 		candy2.scale.x = candy2.scale.y = Utils.random(2, 3);
-		t.set(candy2, {pixi:{x:Utils.random(stageW / 2, stageW + 200), y:Utils.random(-2000, -300)}} );
+		t.set(candy2, {pixi:{x:Utils.random(stageW / 2, stageW + 200), y:Utils.random(-2000, -400)}} );
 
 		candy3.scale.x = candy3.scale.y = Utils.random(2, 3);
-		t.set(candy3, {pixi:{x:Utils.random(stageW / 2, stageW + 200), y:Utils.random(stageH + 150, stageH + 2000)}});
+		t.set(candy3, {pixi:{x:Utils.random(stageW / 2, stageW + 200), y:Utils.random(stageH + 250, stageH + 2000)}});
 
 
 		enemy.scale.x = enemy.scale.y = 4;
 		t.set(enemy, {pixi:{x:Utils.random(0, stageW), y:Utils.random(stageH + 1000, stageH + 5000)}} );
-
-		/*
-		//candies = [candy0, candy1];
-
-		for ( var i = 0; i < candies.length; i++ ) {
-			candies[i].scale.x = candies[i].scale.y = Utils.random(2, 3);
-			t.set(candies[i], {pixi:{x:Utils.random(0, stageW), y:Utils.random(-2000, -200)}} );
-			//log( candies[i].filters );
-			candyFilters.push(candies[i].filters);
-		}
-		*/
-
 
 		scoreText.position.set(76, stageH - scoreText.height - 26);
 		scoreIcon.anchor.set(0.5);
@@ -1264,8 +1228,6 @@ function init() {
 		interfaceHolder.addChild(scoreText);
 
 		main.addChild(bgHolder);
-		//main.addChild(airHead);
-
 		main.addChild(stageHit);
 		main.addChild(candyHolder);
 		main.addChild(interfaceHolder);
@@ -1343,7 +1305,7 @@ function init() {
 
 
 	function setUp() {
-		log('setUp');
+		//log('setUp');
 
 		t.to(loadingText, 0.3, {pixi:{alpha:0, y:'+=10'}, ease:Power3.easeOut, delay:0.5});
 
