@@ -248,35 +248,34 @@ function init() {
 
 	function initAudio() {
 		bgSound = new Howl({
-			src : ['sounds/bg-sound.mp3'],
+			src : ['https://c1.undertonevideo.com/clients/Airheads/sounds/bg-sound.mp3'],
 			volume: 0.5,
 			loop: true,
 		});
 		flapSound = new Howl({
-			src : ['sounds/jump-sound.mp3'],
+			src : ['https://c1.undertonevideo.com/clients/Airheads/sounds/jump-sound.mp3'],
 			volume: 0.5
 		});
 		buttonSound = new Howl({
-			src : ['sounds/button-sound.mp3'],
+			src : ['https://c1.undertonevideo.com/clients/Airheads/sounds/button-sound.mp3'],
 			volume: 0.5
 		});
 		eatSound = new Howl({
-			src : ['sounds/eat-sound.mp3'],
+			src : ['https://c1.undertonevideo.com/clients/Airheads/sounds/eat-sound.mp3'],
 			volume: 0.5
 		});
 		loseSound = new Howl({
-			src : ['sounds/lose-sound.mp3'],
+			src : ['https://c1.undertonevideo.com/clients/Airheads/sounds/lose-sound.mp3'],
 			volume: 0.5
 		});
 		winSound = new Howl({
-			src : ['sounds/win-sound.mp3'],
+			src : ['https://c1.undertonevideo.com/clients/Airheads/sounds/win-sound.mp3'],
 			volume: 0.5
 		});
 		overSound = new Howl({
-			src : ['sounds/over-sound.mp3'],
+			src : ['https://c1.undertonevideo.com/clients/Airheads/sounds/over-sound.mp3'],
 			volume: 0.5
 		});
-
 		var audioCount = 0;
 		function updateAudioProgress() {
 			audioCount += 1;
@@ -621,10 +620,14 @@ function init() {
 		//candyHolder.setChildIndex(candy3, candyHolder.length - 1);
 	}
 
+	var candyTime = 0;
 
 	function handleCandy(delta) {
 
 		//log(candy0.scale.x);
+
+		candyTime += (1 / Math.round(ticker.FPS));
+
 
 		cy0 = stageH / 2 - candy0.y;
 		cx0 = stageW / 2 - candy0.x;
@@ -642,17 +645,13 @@ function init() {
 
 
 		for (var i = 0; i < candies.length; i++) {
-
 			//log( candies[i].scale.x );
-
 		}
 
-
-
-		candyBlur0.blur = candy0.scale.x * 2;
-		candyBlur1.blur = candy1.scale.x * 2;
-		candyBlur2.blur = candy2.scale.x * 2;
-		candyBlur3.blur = candy3.scale.x * 2;
+		candyBlur0.blur = candy0.scale.x * 1.5;
+		candyBlur1.blur = candy1.scale.x * 1.5;
+		candyBlur2.blur = candy2.scale.x * 1.5;
+		candyBlur3.blur = candy3.scale.x * 1.5;
 
 
 		cbcm0 = Math.cos(candy0.scale.x / 2.0)
@@ -714,49 +713,56 @@ function init() {
 			missRate += 1;
 		}
 
-		if (candy1.scale.x > 0) {
-			candy1.y += cy1 * 0.04;
-			candy1.x += cx1 * 0.005;
-			candy1.scale.x = candy1.scale.y -= 0.040;
-			if (candy1.currentFrame === 4 || candy1.currentFrame === 5) {
-				candy1.rotation += 0.025;
+		if (candyTime > 2) {
+			if (candy1.scale.x > 0) {
+				candy1.y += cy1 * 0.04;
+				candy1.x += cx1 * 0.005;
+				candy1.scale.x = candy1.scale.y -= 0.040;
+				if (candy1.currentFrame === 4 || candy1.currentFrame === 5) {
+					candy1.rotation += 0.025;
+				} else {
+					candy1.rotation = 0;
+				}
 			} else {
-				candy1.rotation = 0;
+				resetCandyPos1();
+				candyHolder.swapChildren(candy1, airHead);
+				missRate += 1;
 			}
-		} else {
-			resetCandyPos1();
-			candyHolder.swapChildren(candy1, airHead);
-			missRate += 1;
 		}
 
-		if (candy2.scale.x > 0) {
-			candy2.y += cy2 * 0.04;
-			candy2.x += cx2 * 0.005;
-			candy2.scale.x = candy2.scale.y -= 0.040;
-			if (candy2.currentFrame === 4 || candy2.currentFrame === 5) {
-				candy2.rotation += 0.025;
+
+		if (candyTime > 6) {
+			if (candy2.scale.x > 0) {
+				candy2.y += cy2 * 0.04;
+				candy2.x += cx2 * 0.005;
+				candy2.scale.x = candy2.scale.y -= 0.040;
+				if (candy2.currentFrame === 4 || candy2.currentFrame === 5) {
+					candy2.rotation += 0.025;
+				} else {
+					candy2.rotation = 0;
+				}
 			} else {
-				candy2.rotation = 0;
+				resetCandyPos2();
+				candyHolder.swapChildren(candy2, airHead);
+				missRate += 1;
 			}
-		} else {
-			resetCandyPos2();
-			candyHolder.swapChildren(candy2, airHead);
-			missRate += 1;
 		}
 
-		if (candy3.scale.x > 0) {
-			candy3.y += cy3 * 0.04;
-			candy3.x += cx3 * 0.005;
-			candy3.scale.x = candy3.scale.y -= 0.040;
-			if (candy3.currentFrame === 4 || candy3.currentFrame === 5) {
-				candy3.rotation += 0.025;
+		if (candyTime > 4) {
+			if (candy3.scale.x > 0) {
+				candy3.y += cy3 * 0.04;
+				candy3.x += cx3 * 0.005;
+				candy3.scale.x = candy3.scale.y -= 0.040;
+				if (candy3.currentFrame === 4 || candy3.currentFrame === 5) {
+					candy3.rotation += 0.025;
+				} else {
+					candy3.rotation = 0;
+				}
 			} else {
-				candy3.rotation = 0;
+				resetCandyPos3();
+				candyHolder.swapChildren(candy3, airHead);
+				missRate += 1;
 			}
-		} else {
-			resetCandyPos3();
-			candyHolder.swapChildren(candy3, airHead);
-			missRate += 1;
 		}
 
 		if (candy0.scale.x < 0.45) {
@@ -941,6 +947,7 @@ function init() {
 			playing = true;
 			ticker.start();
 			bgSound.play();
+			Howler.volume(0.01);
 		}
 
 		tlOutro.play();
@@ -953,6 +960,9 @@ function init() {
 
 		tlIntro.add('begin')
 		.from(main, 		0.5, {pixi:{alpha:0}}, '+=1.0')
+		.from(overlay, 		0.7, {pixi:{x:'+=40', alpha:0}, ease:Elastic.easeOut}, '-=0.0')
+		.from(instructionText, 0.4, {pixi:{y:'+=40', alpha:0},ease:Elastic.easeOut}, '-=0.6')
+
 		.from(gaGet, 	0.8, {pixi:{scale:0.3, alpha:0}, ease:Elastic.easeOut})
 		.from(gaCandy4, 	0.6, {pixi:{scale:0.5, alpha:0}, ease:Elastic.easeOut}, '-=0.7')
 		.from(gaCandy3, 	0.6, {pixi:{scale:1.2, alpha:0}, ease:Elastic.easeOut}, '-=0.75')
@@ -960,8 +970,8 @@ function init() {
 		.from(gaCandy2, 	0.6, {pixi:{scale:1.2, alpha:0}, ease:Elastic.easeOut}, '-=0.75')
 		.from(gaBg, 		0.2, {pixi:{scale:0, alpha:0}, ease:Power3.easeOut}, '-=0.7')
 		.from(gaCandy1, 	0.6, {pixi:{scale:1.2, alpha:0}, ease:Elastic.easeOut}, '-=0.75')
-		.from(overlay, 		0.7, {pixi:{x:'+=40', alpha:0}, ease:Elastic.easeOut}, '-=0.0')
-		.from(instructionText, 0.4, {pixi:{y:'+=40', alpha:0},ease:Elastic.easeOut}, '-=0.6')
+
+
 		.from(ahLogo, 		0.8, {pixi:{scale:0.7, alpha:0}, ease:Power3.easeOut}, '-=0.2')
 		.addCallback(function() { ahLogo.play() }, '-=0.85')
 		.from(ctaHolder, 	0.6, {pixi:{y:'+=40', alpha:0, scale:0.5}, ease:Elastic.easeOut}, '-=0.6')
@@ -1041,7 +1051,7 @@ function init() {
 		ctaHolder.addChild(ctaBg);
 		ctaHolder.addChild(ctaText);
 
-		ctaHolder.position.set( stageW / 3, stageH / 2 + 160);
+		ctaHolder.position.set( stageW / 3, stageH / 2 + 145);
 		ahLogo.position.set(stageW - ahLogo.width / 2, 160);
 		instructionText.position.set((overlay.x + overlay.width / 2) - instructionText.width / 2, stageH - instructionText.height - 60);
 
@@ -1200,16 +1210,16 @@ function init() {
 		//candies = [candy0, candy1, candy2, candy3, candy4, candy5, candy6];
 
 		candy0.scale.x = candy0.scale.y = Utils.random(2, 3);
-		t.set(candy0, {pixi:{x:Utils.random(-200, stageW / 2), y:Utils.random(-2000, -200)}} );
+		t.set(candy0, {pixi:{x:Utils.random(-200, stageW / 2), y:Utils.random(-2000, -300)}} );
 
 		candy1.scale.x = candy1.scale.y = Utils.random(2, 3);
-		t.set(candy1, {pixi:{x:Utils.random(-200, stageW / 2), y:Utils.random(stageH + 50, stageH + 2000)}});
+		t.set(candy1, {pixi:{x:Utils.random(-200, stageW / 2), y:Utils.random(stageH + 150, stageH + 2000)}});
 
 		candy2.scale.x = candy2.scale.y = Utils.random(2, 3);
-		t.set(candy2, {pixi:{x:Utils.random(stageW / 2, stageW + 200), y:Utils.random(-2000, -200)}} );
+		t.set(candy2, {pixi:{x:Utils.random(stageW / 2, stageW + 200), y:Utils.random(-2000, -300)}} );
 
 		candy3.scale.x = candy3.scale.y = Utils.random(2, 3);
-		t.set(candy3, {pixi:{x:Utils.random(stageW / 2, stageW + 200), y:Utils.random(stageH + 50, stageH + 2000)}});
+		t.set(candy3, {pixi:{x:Utils.random(stageW / 2, stageW + 200), y:Utils.random(stageH + 150, stageH + 2000)}});
 
 
 		cat.scale.x = candy1.scale.y = 4;
@@ -1396,7 +1406,7 @@ function init() {
 		catBrightness.brightness(0.5);
 
 		candyBlur0.blur = candyBlur1.blur = candyBlur2.blur = candyBlur3.blur = candyBlur4.blur = candyBlur5.blur = candyBlur6.blur = candyBlur7.blur = 10;
-
+		candyBlur0.quality = candyBlur1.quality = candyBlur2.quality = candyBlur3.quality = 6;
 
 		main = new PIXI.Container();
 		bgHolder = new PIXI.Container();
