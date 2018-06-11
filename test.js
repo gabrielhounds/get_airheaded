@@ -641,6 +641,13 @@ function init() {
 		//cx3 = (stageW / 2 + stageW / 4) - candy3.x;
 
 
+		for (var i = 0; i < candies.length; i++) {
+
+			//log( candies[i].scale.x );
+
+		}
+
+
 
 		candyBlur0.blur = candy0.scale.x * 2;
 		candyBlur1.blur = candy1.scale.x * 2;
@@ -1180,6 +1187,9 @@ function init() {
 		candyHolder.addChild(candy2);
 		candyHolder.addChild(candy3);
 		candyHolder.addChild(cat);
+
+
+		candies = [candy0, candy1, candy2, candy3];
 
 		//candyHolder.addChild(candy2);
 		//candyHolder.addChild(candy3);
