@@ -130,6 +130,8 @@ function init() {
 	maxEnemyScale = 5,
 	candyScaleRate = 0.040,
 	enemyScaleRate = 0.035,
+	enemyMoveRate = 0.04,
+	enemyEmitRate = 2,
 
 	won, lost,
 
@@ -317,11 +319,15 @@ function init() {
 			app = new Application({width : _width, height : _height, forceCanvas : true});
 
 			minCandyScale = 2;
-			maxCandyScale = 4;
-			maxEnemyScale = 5;
+			maxCandyScale = 3;
+			maxEnemyScale = 2.5;
 
 			candyScaleRate = 0.040;
-			enemyScaleRate = 0.040;
+			enemyScaleRate = 0.020;
+
+			enemyMoveRate = 0.045;
+
+			enemyEmitRate = 6;
 
 			if (_height < 500) {
 				screenHeight = 'small';
@@ -462,7 +468,12 @@ function init() {
 		ticker.stop();
 		//bottomHits = 0;
 		//airHead.y = -airHead.height;
-		t.set(airHead, {pixi:{y:stageH / 2, x:stageW / 2 - airHead.width / 2}});
+		//t.set(airHead, {pixi:{y:stageH / 2, x:stageW / 2 - airHead.width / 2}});
+
+
+		t.set(airHead, {pixi:{y:-200, x:stageW / 2 - airHead.width / 2}});
+		t.to(airHead, {pixi:{y:stageH / 2 + 200, x:stageW / 2}});
+
 		if (lives === 3 ) {
 			t.to(heart1, 0.05, {pixi:{alpha:0}, ease:Power3.easeOut, yoyo:true, repeat:4});
 			lives = 2;
@@ -512,8 +523,13 @@ function init() {
 	function handleEnemy() {
 
 		//log(elapsedTime);
+
+
 		eyt = stageH / 2 - enemy.y;
 		ext = stageW / 2 - enemy.x;
+
+
+
 
 		enemyBlur.blur = enemy.scale.x * 1;
 		enemyCm = Math.cos(enemy.scale.x / 2.5)
@@ -538,13 +554,13 @@ function init() {
 			}
 		}
 
-		if (enemyTime > 2) {
+		if (enemyTime > enemyEmitRate) {
 			if (enemy.scale.x > 0) {
 				//cat.y += cyt * 0.04;
 				//cat.x += cxt * 0.005;
 
-				enemy.y += eyt * 0.04;
-				enemy.x += ext * 0.04;
+				enemy.y += eyt * enemyMoveRate;
+				enemy.x += ext * enemyMoveRate;
 
 				enemy.scale.x = enemy.scale.y -= enemyScaleRate;
 				//cat.rotation -= 0.025;
@@ -876,88 +892,40 @@ function init() {
 				airHead.x = e.data.global.x;
 			});
 
+			head.rotation = (-dx / 4 * (Math.PI / 180));
+			airBody.rotation = (dx / 8 * (Math.PI / 180));
 
-			//stageHit.on('pointerdown', handleTap);
+			rightLeg.rotation = (dx / 5.5 * (Math.PI / 180));
+			lowerRightLeg.rotation = (dx / 2.5 * (Math.PI / 180));
 
-			/*stageHit.on('pointermove', handleTouch(e));
-				/*ex = e.data.global.x;
-				ey = e.data.global.y;
-				dx = (ex - airHead.x) * easing;
-				dy = ((ey - 120 ) - (airHead.y)) * easing;
-				ax = dx * spring;
-				ay = dy * spring;
-				vx += ax;
-				vy += ay;
-				vx *= friction;
-				vy *= friction;
-				handleTouch(e);
-			});*/
+			leftLeg.rotation = (dx / 5.5 * (Math.PI / 180)) + 0.25;
+			lowerLeftLeg.rotation = (dx / 2.5 * (Math.PI / 180));
 
-			/*stageHit.on('pointerdown', function(e){
-				/*ex = e.data.global.x;
-				ey = e.data.global.y;
-				dx = (ex - airHead.x) * easing;
-				dy = ((ey - 120 ) - (airHead.y)) * easing;
-				ax = dx * spring;
-				ay = dy * spring;
-				vx += ax;
-				vy += ay;
-				vx *= friction;
-				vy *= friction;
+			upperLeftArm.rotation = (dx / 5 * (Math.PI / 180));
+			lowerLeftArm.rotation = (dx / 1.5 * (Math.PI / 180));
 
-				handleTap(e);
-			});*/
+			upperRightArm.rotation = (dx / 5 * (Math.PI / 180));
+			lowerRightArm.rotation = (dx / 2.5 * (Math.PI / 180));
 
-				//airHead.y -= 0.03;
-
-				head.rotation = (-dx / 2 * (Math.PI / 180));
-				airBody.rotation = (dx / 8 * (Math.PI / 180));
-
-				rightLeg.rotation = (dx / 5.5 * (Math.PI / 180));
-				lowerRightLeg.rotation = (dx / 2.5 * (Math.PI / 180));
-
-				leftLeg.rotation = (dx / 5.5 * (Math.PI / 180)) + 0.25;
-				lowerLeftLeg.rotation = (dx / 2.5 * (Math.PI / 180));
-
-				upperLeftArm.rotation = (dx / 5 * (Math.PI / 180));
-				lowerLeftArm.rotation = (dx / 1.5 * (Math.PI / 180));
-
-				upperRightArm.rotation = (dx / 5 * (Math.PI / 180));
-				lowerRightArm.rotation = (dx / 2.5 * (Math.PI / 180));
-
-				airHead.y += vy + 20;
-				airHead.x += vx;
+			airHead.y += vy + 10;
+			airHead.x += vx;
 
 
 		}
 	}
 
-	function handleTap(e){
-		ex = e.data.global.x;
-		ey = e.data.global.y;
-		dx = 0;
-		dy = 0;
-		ax = dx * spring;
-		ay = dy * spring;
-		vx += ax;
-		vy += ay;
-		vx *= friction;
-		vy *= friction;
-	}
-
+	var mSpring = 0.03;
 	function handleTouch(e) {
 		ex = e.data.global.x;
 		ey = e.data.global.y;
 		dx = (ex - airHead.x) * easing;
 		dy = ((ey - 120 ) - (airHead.y)) * easing;
-		ax = dx * spring;
-		ay = dy * spring;
+		ax = dx * mSpring;
+		ay = dy * mSpring;
 		vx += ax;
 		vy += ay;
 		vx *= friction;
 		vy *= friction;
-		//airHead.y += vy + 30;
-		//airHead.x += vx;
 	}
 
 
@@ -1127,6 +1095,8 @@ function init() {
 			instructionText.position.set( ((stageW - overlay.x) / 2 ) + overlay.x - instructionText.width / 2, stageH - instructionText.height - 60);
 
 		} else if ( screenSize === 'mobile') {
+
+			instructionText.setText(' Drag your finger.\nCatch some candy.\nIt’s that easy. ')
 
 			if (screenHeight === 'small') {
 				overlay.anchor.set(0.5);
@@ -1398,8 +1368,10 @@ function init() {
 			gaLogoEnd.position.set(stageW / 3 - gaLogoEnd.width / 2 - 10, 26);
 			yourScoreText.position.set(stageW / 3 - yourScoreText.width / 2, 168);
 			endSubhead.position.set(stageW / 3 - endSubhead.width / 2, 284);
-			endCtaHolder1.position.set(stageW / 3 - endCtaHolder1.width / 2 - 40, stageH / 2 + 180);
-			endCtaHolder2.position.set(stageW / 3 + endCtaHolder2.width / 2 + 40, stageH / 2 + 180);
+
+			endCtaHolder1.position.set(stageW / 3 - endCtaHolder1.width / 2 - 40, stageH / 2 + 160);
+			endCtaHolder2.position.set(stageW / 3 + endCtaHolder2.width / 2 + 40, stageH / 2 + 160);
+
 			ahLogoEnd.position.set(stageW - ahLogo.width / 2, 220);
 		} else if ( screenSize === 'tablet' ) {
 			//log('Position Tablet EndFrame');
@@ -1485,7 +1457,7 @@ function init() {
 
 		overlay = new PIXI.Sprite(resources['overlayBg_@2X.png'].texture);
 
-		instructionText = new PIXI.Text(' Drag the Airhead.\nCatch some candy.\nIt’s that easy. ');
+		instructionText = new PIXI.Text(' Drag your mouse.\nCatch some candy.\nIt’s that easy. ');
 
 		ctaText.style 		= Text.ctaTextStyle;
 		instructionText.style = Text.interfaceTextStyle;
