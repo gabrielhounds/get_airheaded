@@ -61,7 +61,31 @@ div {
   right: 0;
   width: 50px;
   height: 50px;
-  z-index: 999;
   background-image: url(closeBtn.png);
   cursor: pointer;
+  z-index: 999;
+}
+
+#rotateAlert {
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  z-index: 990;
+}
+
+#rotateAlert p {
+  position: absolute;
+  width: 500px;
+  height: 40px;
+  color: #FFFFFF;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: 'uniform_roundedbold', sans-serif;
+  font-size: 22px;
+  text-align: center;
+}
+
+#rotateAlert p:after {
+  content: 'Please Rotate Your Device';
 }
